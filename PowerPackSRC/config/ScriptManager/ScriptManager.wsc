@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<!--
+	Copyright (c) 2005 OpenConf Community <http://openconf.itland.ru>
+
+	$Id: $
+
+	Авторы:  
+		Александр Кунташов aka a13x <kuntashov@yandex.ru> icq#338758861  
+-->
+<package>
+<component>
+<?component error="true" debug="true"?>
+
+<registration
+	description="ScriptManager component for OpenConf"
+	progid="OpenConf.ScriptManager"
+	version="1.00"
+	classid="{71b26c99-34a3-6e54-1ab4-ca7ac380d466}">
+</registration>
+
+<comment>Библиотека типов OpenConf'а</comment> 
+<reference guid="{578f85c8-89eb-4cda-ac7e-8f3bb34e8b54}" /> 
+<!-- object id="OCS" progid="OpenConf.CommonServices" / -->
+<object id="FSO" progid="Scripting.FileSystemObject" />
+<object id="ActiveKeyMap" progid="ScriptManager.KeyMap" />
+
+<public>
+
+	<method name="OnInit">
+		<parameter name="HotKeyEventProxy" />
+		<parameter name="Configurator" />
+	</method>
+
+	<method name="OnHotKey">
+		<parameter name="HotKey" />
+	</method>
+
+	<property name="SMDir">
+		<get />
+	</property>
+
+	<method name="Shutdown" />
+	<method name="OpenHotKeysEditor" />
+	
+</public>
+
+<script language="JavaScript">
+<![CDATA[
+
+var _debug = true;
+
+var Config = null;
+var HKEP = null;
+var ExclPatterns = [];
+var SCache;
+var SMDir = "";
+
+function get_SMDir()
+{
+	return SMDir;
+}
+
+function Shutdown()
+{
+	Config = null;
+	HKEP = null;
+	ExclPatterns = null;
+	SCache = null;
+}
+
+function OpenHotKeysEditor()
+{
+	Config.Scripts.Load(FSO.BuildPath(SMDir, "HotKeysEditor.js"));
+}
+
+function OnInit(HotKeyEventProxy, Configurator)
+{	
+	HKEP = HotKeyEventProxy;
+	Config = Configurator;
+	SMDir = FSO.BuildPath(Config.BinDir, "config\\system\\ScriptManager");
+
+	if (!LoadKeyMap(FSO.BuildPath(SMDir, "test.keymap.js"))) return;
+
+	SCache = new ScriptCache();
+
+	LoadScripts();
+}
+
+function OnHotKey(HotKey)
+{
+	var hki = ActiveKeyMap.HotKeyInfo(HotKey);
+	if (!hki) {
+		error("Для хоткея " + HotKey 
+			+ " не назначена ни одна команда ни в одном из контекстов");
+		return;
+	}
+
+	var ctx = GetContext();
+
+	/* 	"Глобальный" хоткей - это хоткей, который выполняется независимо от
+	 * текущего контекста, т.е. хоткей, по которому в любом окне выполняется
+	 * одно и то же действие независимо от типа окна (так ведет себя ОпенКонф
+	 * по умолчанию). 
+	 * 	Такую ситуацию можно смоделировать назначив одну и ту же команду (макрос)
+	 * для всех контекстов вызова хоткея.
+	 *	Но чтобы сделать наш кеймап проще и исключить дублирование описаний 
+	 * обработчика контекста, примем следующее соглашение: если для контекста
+	 * 0 ("нет активного окна") назначен обработчик, а для всех остальных нет -
+	 * то будем считать, что это есть команда (макрос) для выполнения независимо,
+	 * от контекста, т.е. хоткей является глобальным.
+	 */
+
+	// проверяем хоткей на "глобальность"
+	var global = true;
+	for(var i=1; i<hki.length; i++) {		
+		global = global && !((typeof(hki[i])=='object')&&(hki[i].macros));
+		if (!global) break;
+	}
+
+	if (global) ctx = 0;
+	
+	var info = hki[ctx];
+
+	if (!info || !info.macros) {
+		error("Не задан макрос для хоткея " + HotKey + "(Контекст: " + ctx + ")");
+		return;
+	}
+
+	if (!info.script) {
+		// это команда, выполняем ее
+		RunCommand(info.macros);
+		return;
+	}
+	
+	if (!IsScriptLoaded(info.script)) {
+		if (!(info.path && LoadScript(info.path))) {
+			return;
+		}
+	}
+	
+	CallMacros(info.script, info.macros);
+
+	if (info.runOnce) {
+		UnloadScript(info.path);
+	}	
+}
+
+/*
+ * При загрузке - загружаются скрипты из заданных в файле Folders.lst директорий
+ *	- игнорируются файлы по маске:
+ *		- из файла Exclude.lst ("маска" - регулярное выражение)
+ *		- TODO локальные (для данной директории) маски из файла .ignore
+ *		- файлы, начинающиеся с '.'
+ *		- файлы в директориях 'CVS'
+ *		- скрытые файлы (с установленным атрибутом hidden)
+ */
+
+function LoadScripts()
+{
+	var re_comment = new RegExp(/^\s*\/\//);
+	var re_blank = new RegExp(/^\s*$/);
+
+	var Exclude_lst = FSO.BuildPath(SMDir, "Exclude.lst");
+	if (FSO.FileExists(Exclude_lst)) {
+		var exclude = FSO.OpenTextFile(Exclude_lst);
+		ExclPatterns = [];
+		for (var lineno=1; !exclude.AtEndOfStream; lineno++) {
+			var str = exclude.ReadLine()
+			if (re_blank.test(str)) continue;
+			if (re_comment.test(str)) continue;
+			var re = new RegExp(str, "i");
+			ExclPatterns[ExclPatterns.length] = re;
+		}
+	}
+
+	var Folders_lst = FSO.BuildPath(SMDir, "Folders.lst");
+	if (FSO.FileExists(Folders_lst)) {
+		var folders = FSO.OpenTextFile(Folders_lst);
+		for (; !folders.AtEndOfStream; ) {
+			var str = folders.ReadLine();
+			if (re_blank.test(str)) continue;
+			if (re_comment.test(str)) continue;
+			if (FSO.FolderExists(str)) {
+				LoadScriptsFromFolder(FSO.GetFolder(str));
+			}
+		}
+	}
+}
+
+function LoadScriptsFromFolder(folder)
+{
+	LoadScriptsInFolder(folder);
+	var subs = new Enumerator(folder.SubFolders);
+	for(; !subs.atEnd(); subs.moveNext()) {
+		var sub = subs.item();
+		if (CheckPath(sub)) {
+			LoadScriptsFromFolder(sub);
+		}
+	}
+}
+
+function LoadScriptsInFolder(folder)
+{
+	var files = new Enumerator(folder.files);
+	for(; !files.atEnd(); files.moveNext()) {
+		var file = files.item();
+		if (CheckPath(file, ExclPatterns)) {
+			LoadScript(file.Path);
+		}
+	}
+}
+
+function CheckPath(FSObj, Excl)
+{
+	var ret = true; 
+	with (FSObj) {
+		ret = !((Name.charAt(0)=='.') || (Name=='CVS') || (Attributes&2));
+	}
+	if (ret && Excl && Excl.length) {
+		for (var i=0; i<Excl.length; i++) {
+			if (Excl[i].test(FSObj.Path)) {
+				ret = false;
+				break;
+			}
+		}
+	}
+	return ret;
+}
+
+function LoadScript(path)
+{
+	try {
+		var Script = Config.Scripts.Load(path);
+		SCache.add(Script.Name, path)
+		return true;
+	}
+	catch (e) {
+		error("Не могу загрузить скрипт " + path, e);		
+		return false;
+	}
+}
+
+function IsScriptLoaded(ScriptName)
+{
+	if (SCache.exists(ScriptName)) return true;
+	for (var i=0; i<Config.Scripts.Count; i++) {
+		if (Config.Scripts.Name(i) == ScriptName) {
+			// дабы исключить перебор в следующий раз, кэшируем
+			SCache.add(ScriptName, Config.Scripts.path(i));
+			return true;
+		}
+	}
+	return false;
+}
+
+function UnloadScript(ScriptName)
+{
+	if (IsScriptLoaded(fname)) {
+		try {
+			Config.Scripts.UnLoad(ScriptName);
+			SCache.del(ScriptName);
+			return true;
+		}
+		catch (e) {
+			error("Ошибка выгрузки скрипта: " + ScriptName, e);			
+			return false;
+		}
+	}
+}
+
+/*	Различаются следующие контексты:
+ *		0 - нет открытых окон
+ *		1 - открыто и активно окно конфигурации, закладка Метаданные
+ *		2 - открыто и активно окно конфигурации, закладка Интерфейсы
+ *		3 - открыто и активно окно конфигурации, закладка Права 
+ *		4 - открыто и активно окно конфигурации, другие закладки (OpenConf или плагины)
+ *		5 - открыто и активно окно редактора текстов
+ *		6 - открыто и активно окно редактора форм
+ *		7 - открыто и активно окно редактора таблиц
+ *		8 - есть активное окно, но тип документа не определен (docUnknown)
+ */
+function GetContext()
+{
+	var win = Config.Windows.ActiveWnd;
+	if (!win) {	
+		return 0;
+	}
+
+	// активное окно - это окно конфигурации?
+	if (win == Config.MDWnd.hWnd) {
+		var at = Config.MDWnd.ActiveTab;
+		/* закладки с индексами 0 (Метаданные), 1 (Интерфейсы) и 2 (Права)
+		 * выделяем как отдельные контексты, остальные закладки рассматриваем 
+		 * как один контекст (закладки OpenConf'а и плагинов)
+		 */		
+		return ((-1<at)&&(at<3) ? at+1 : 4);
+	}		
+
+	// нет, это окно какого-либо документа
+	var doc = win.Document;
+	if (doc == docWorkBook) {
+		doc = doc.Page(doc.ActivePage);
+	}
+	// каждый тип документа в активном окне образует свой контекст
+	switch (doc.Type) {
+		case docText	: return 5; // окно редактора текстов
+		case docDEdit	: return 6; // окно редактора форм
+		case docTable	: return 7; // окно редактора таблиц
+		default			: return 8; // неизвестный тип окна
+	}	
+}
+
+function ContextToString(context)
+{
+	switch (context) {
+		case 0	: return "нет открытых окон";
+		case 1	: return "окно конфигурации, закладка Метаданные";
+		case 2	: return "окно конфигурации, закладка Интерфейсы";
+		case 3	: return "окно конфигурации, закладка Права";
+		case 4	: return "окно конфигурации, другие закладки (OpenConf или плагины)";
+		case 5	: return "окно редактора текстов";
+		case 6	: return "окно редактора форм";
+		case 7	: return "окно редактора таблиц";
+		default	: return "окно неопределенного типа";			
+	}
+}
+
+function RunCommand(cmd)
+{
+}
+
+function CallMacros(ScriptName, Macros)
+{
+	try {
+		Config.Scripts(ScriptName)[Macros]();
+		return true;
+	}
+	catch (e) {			
+		error("Ошибка выполнения макроса " + ScriptName + "::" + Macros, e);
+		return false;
+	}
+}
+
+function LoadKeyMap(path)
+{
+	if (!ActiveKeyMap.LoadFromFile(path)) {
+		error('Ошибка загрузки кеймапа!', ActiveKeyMap.LastError);
+		return false;
+	}
+	return true;
+}
+
+function ScriptCache()
+{
+	var cache = {};
+
+	this.add = function(Name, Path) 
+	{
+		if (!cache[Name]) {
+			cache[Name] = Path;
+		}		
+	}
+	this.del = function (Name) 
+	{
+		if (cache[Name]) {
+			cache[Name] = undefined;
+		}
+	}
+	this.exists = function (Name)
+	{	
+		return cache[Name]?true:false;
+	}
+	this.getPath = function (Name)
+	{
+		return cache[Name];
+	}
+}
+
+function _msg()
+{
+	if (!_debug) return;
+	for (var i=0; i<arguments.length; i++) {
+		Config.Message("{ScriptManager}: " + arguments[i]);
+	}
+}
+
+function error(errmsg,e)
+{
+	Config.Message("{ScriptManager} " + errmsg, mRedErr);
+	if (e) {
+		if (typeof(e) == 'object') {
+			for (var a in e) {
+				Config.Message("\t\t" + a + ": " + e[a]);
+			}
+			return;
+		}
+		Config.Message("\t\t" + e)
+	}
+}
+
+]]>
+</script>
+</component>
+</package> 

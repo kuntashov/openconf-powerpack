@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="4"
+   name=""
+   committed-date="2005-07-06T14:19:26.937500Z"
+   url="file:///f:/repos/svn/OpenConf/system/ScriptManager/t"
+   last-author="1"
+   kind="dir"
+   uuid="81155499-493a-134a-98ce-c939cf27e194"
+   revision="4"/>
+<entry
+   committed-rev="5"
+   name="RegKeyMap.js"
+   text-time="2005-07-07T07:33:44.687500Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="d32520020dbb39e41ef6d209001d419a"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+<entry
+   committed-rev="5"
+   name="Registry.js"
+   text-time="2005-07-07T07:33:54.125000Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="2910b7355e7a71f530a497f8c0c4f15a"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+<entry
+   name="RegKeyMap"
+   kind="dir"/>
+<entry
+   committed-rev="1"
+   name="jsSMTest.js"
+   text-time="2005-07-04T09:50:34.453125Z"
+   committed-date="2005-07-04T09:48:02.546875Z"
+   checksum="5f5b1c9df93498472dbc58d03df5a885"
+   last-author="1"
+   kind="file"
+   prop-time="2005-07-04T09:50:34.406250Z"/>
+<entry
+   name="Registry"
+   kind="dir"/>
+<entry
+   committed-rev="5"
+   name="RegKeyMap.bat"
+   text-time="2005-07-07T07:25:42.890625Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="7635475fe25e1295c8eabe0ed7d983ec"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+<entry
+   committed-rev="5"
+   name="Registry.bat"
+   text-time="2005-07-07T07:39:29.078125Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="fbba7f076d6d1867fef042ea613d125c"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+</wc-entries>

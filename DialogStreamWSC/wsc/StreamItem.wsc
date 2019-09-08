@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!-- 
+
+ Copyright (c) 2004 Alexander Kuntashov <kuntashov@yandex.ru>
+
+    Допускается свободное использование и модификация исходного
+    кода. Буду очень признателен, если при этом настоящий комментарий
+    будет сохранен.
+    
+-->
+<package>
+<component id="OpenConfStreamItem">
+<?component error="true" debug="true"?>
+
+    <comment><![CDATA[
+Компонент, реализующий объектное представление элемента Stream'а.
+Под элементом Stream'а понимается валидная 1С-строка, либо дочерний
+стрим. 
+    ]]></comment>
+
+<registration
+    description="StreamParser component for OpenConf"
+    progid="OpenConf.StreamItem"
+    version="1.00"
+    classid="{72ab9a4e-caa6-4688-a310-43735e25b82f}"
+/>
+
+<public>
+    <property name='Data'>
+        <get/>
+        <put/>
+        <comment><![CDATA[
+Данные элемента Stream'a, строка или коллекция элементов Stream'а.
+        ]]></comment>
+    </property>
+    <method name="Stringify">
+        <comment><![CDATA[
+Возвращает строковое представление элемента Stream'а:
+    - строковые данные заключаются в кавычки, кавычки внутри строкизадваиваются
+    - если Data - это коллекция элементов, то из нее формируется валидный код Stream'a
+      (разделенные запятыми 1С-строки, результат обрамляется фигурными скобками "{" и "}");
+      элементы коллекции обрабатываются рекурсивно
+        ]]></comment>
+    </method>
+</public>
+<script language="JScript"><![CDATA[
+
+var Data; 
+
+function get_Data() 
+{
+    return Data;
+}
+
+function put_Data(value)
+{
+    if (value.toString() !== '[object OpenConf.Collection]') {
+        Data = value.toString();
+    }
+    else {
+        Data = value;
+    }
+}
+
+function Stringify()
+{
+    var result = '';
+    if (typeof(Data) == 'string') {
+        // вроде, не зацикливаемся
+        result = '"' + Data.replace(new RegExp('"', 'g'), '""') + '"'; 
+    } 
+    else {
+        result = '{';
+        for (var i=0; i<Data.Size(); i++) {
+            result += (i?',':'') + Data.Item(i).Stringify();
+        } 
+        result += '}';   
+    }
+    return result;
+}
+
+]]></script>
+</component>
+</package>

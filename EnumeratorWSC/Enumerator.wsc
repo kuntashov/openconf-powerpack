@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<component>
+
+<registration
+    description="Scripting.Enumerator"
+    progid="Scripting.Enumerator"
+    version="1.00"
+    classid="{36D2509E-F9F8-4e17-8513-B15ACD88CE42}">
+</registration>
+
+<public>
+    <method name="enumCollection">
+        <parameter name="collection" />
+    </method>
+    <method name="atEnd" />
+    <method name="item" /> 
+    <method name="moveFirst" />
+    <method name="moveNext" />    
+</public>
+
+<script language="JScript">
+<![CDATA[
+
+var description = new EnumeratorWrapper;
+
+function enumCollection(collection)
+{
+    description.enu = new Enumerator(collection);
+}
+
+function atEnd()
+{
+    return (description.enu)?description.enu.atEnd():true;
+}
+
+function item()
+{
+    return (description.enu)?description.enu.item():null;
+}
+
+function moveFirst()
+{
+    if (description.enu)
+        description.enu.moveFirst();
+}
+
+function moveNext()
+{
+    if (description.enu)
+        description.enu.moveNext();
+}
+
+function EnumeratorWrapper()
+{
+    this.enu = null;   
+}
+
+]]>
+</script>
+</component> 

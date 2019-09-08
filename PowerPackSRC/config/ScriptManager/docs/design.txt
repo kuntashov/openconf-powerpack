@@ -1,0 +1,32 @@
+Классы
+
+	HotKeyEventProxy (js-класс)
+		Property ScriptManager As OpenConf.ScriptManager
+
+	ScriptManager (OpenConf.ScriptManager, ScriptManager.wsc)
+		Property HKEP			As HotKeyEventProxy
+		Property SCache			As ScriptCache
+		Property ActiveKeyMap	As ScriptManager.KeyMap
+	
+	ScriptCache (js-класс, определен в ScriptManager.wsc)
+
+	KeyMap (ScriptManager.KeyMap, KeyMap.wsc)
+
+	KeyMapsContainer (ScriptManager.KeyMapsContainer, KeyMap.wsc)
+		Property ocKM As OpenConf.RegistryKeyMap
+		Property smKM As ScriptManager.KeyMap
+
+	RegistryKeyMap (OpenConf.RegistryKeyMap, RegistryKeyMap.wsc)
+		Property REG							As kuntashov.Registry
+		Property HK								As Scripting.Dictionary
+		Property HotKeyInfo(ShortCut As String) As OpenConfHotKeyInfo
+
+	OpenConfHotKeyInfo (component, RegistryKeyMap.wsc)
+
+	Registry (kuntashov.Registry, Registry.wsc)
+		Property SubKeys(KeyName As String)		As RegistrySubKeys (component, Registry.wsc)
+		Property Values(ValueName As String)	As RegistryValues	(component, Registry.wsc)
+
+	
+
+

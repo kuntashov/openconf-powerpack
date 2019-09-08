@@ -1,0 +1,7 @@
+assign(KM.toShortCut(0x740000), "F5")
+assign(KM.toShortCut(0x4d0008), "CtrlM")
+assign(KM.toShortCut(0x520010), "AltR")
+assign(KM.toShortCut(0x7b0004), "ShiftF12")
+assign(KM.toShortCut(0x340018), "CtrlAlt4")
+assign(KM.toShortCut(0x75001c), "CtrlAltShiftF6")
+assign(KM.toShortCut(0x6a000c), "CtrlShift0x6a")

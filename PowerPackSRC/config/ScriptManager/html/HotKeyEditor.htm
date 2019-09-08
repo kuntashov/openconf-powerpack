@@ -1,0 +1,162 @@
+<html>
+<head>
+
+<title>HotKey Editor</title>
+<link rel="stylesheet" type="text/css" href="./style.css" />
+
+<script language="JavaScript">
+
+var h = {};
+
+function SetHandlers (handlers) 
+{ 
+	h = handlers;
+}
+
+function onCheckBoxClick()
+{
+	return h.onCheckBoxClick(hkForm, event);
+}
+
+function onSelectKey()
+{
+	return h.onSelectKey(hkForm);
+}
+
+function onLoad()
+{
+	h.onLoad(hkForm, divShortCut);
+}
+
+function onButtonClick()
+{
+	switch (event.srcElement.name) {
+		case "btnCancel" :
+			return h.onCancelClick();
+		case "btnSave" :
+			return h.onSaveClick(hkForm);
+		default	:
+			return h.onSelMacroClick(hkForm, event);
+	}
+}
+
+function onXClick()
+{
+	return h.onDelMacroClick(hkForm, event);
+}
+
+function onUnload()
+{
+	return h.onClose();
+}
+
+</script>
+
+</head>
+<body onUnload="return onUnload()" onLoad="onLoad()">
+
+<center>
+<div>
+	<div class="header" id="test">
+		<h3>Редактор клавиатурных сокращений для Менеджера Скриптов</h3>
+	</div>	
+
+	<form name="hkForm">
+		<div>
+			<table>
+				<tr>
+					<td><b>Контекст</b></td>
+					<td><b>Макрос</b></td>
+				</tr>
+				<tr class="darkRow">
+					<td>Нет открытых окон/глоб.</td>
+					<td>
+						<input type="text" name="txtMacro0" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..." name="btnMacro0" onClick="return onButtonClick()"/>
+						<input type="button" value="X" name="btnX0" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr class="lightRow">
+					<td>Редактор текстов</td>
+					<td>
+						<input type="text" name="txtMacro5" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..." name="btnMacro5" onClick="return onButtonClick()" />
+						<input type="button" value="X" name="btnX5" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr class="darkRow">
+					<td>Редактор форм</td>
+					<td>
+						<input type="text" name="txtMacro6" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..." name="btnMacro6" onClick="return onButtonClick()" />
+						<input type="button" value="X" name="btnX6" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr class="lightRow">
+					<td>Редактор таблиц</td>
+					<td>
+						<input type="text" name="txtMacro7" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..." name="btnMacro7" onClick="return onButtonClick()" />
+						<input type="button" value="X" name="btnX7" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr class="darkRow">
+					<td>Конфигурация/Метаданные</td>
+					<td>
+						<input type="text" name="txtMacro1" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..."  name="btnMacro1" onClick="return onButtonClick()" />
+						<input type="button" value="X" name="btnX1" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr class="lightRow">
+					<td>Конфигурация/Интерфейсы</td>
+					<td>
+						<input type="text" name="txtMacro2" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..." name="btnMacro2" onClick="return onButtonClick()" />
+						<input type="button" value="X" name="btnX2" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr class="darkRow">
+					<td>Конфигурация/Права</td>
+					<td>
+						<input type="text" name="txtMacro3" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..." name="btnMacro3" onClick="return onButtonClick()" />
+						<input type="button" value="X" name="btnX3" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr class="lightRow">
+					<td>Конфигурация/ОпенКонф</td>
+					<td>
+						<input type="text" name="txtMacro4" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..." name="btnMacro4" onClick="return onButtonClick()" />
+						<input type="button" value="X" name="btnX4" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr class="darkRow">
+					<td>Прочие окна</td>
+					<td>
+						<input type="text" name="txtMacro8" value="&lt;Не задан&gt;" class="macroName" disabled />
+						<input type="button" value="..." name="btnMacro8" onClick="return onButtonClick()" />
+						<input type="button" value="X" name="btnX8" onClick="return onXClick()"/>
+					</td>
+				</tr>
+				<tr><td>&nbsp;</td><td>&nbsp;</td></tr>		
+				<tr>
+					<td><div id="divShortCut">
+						<input type="checkbox"	name="chbCtrl" 	onClick="return onCheckBoxClick()" />Ctrl
+						<input type="checkbox"	name="chbAlt"	onClick="return onCheckBoxClick()" />Alt
+						<input type="checkbox"	name="chbShift"	onClick="return onCheckBoxClick()" />Shift
+						<!-- input type="text"		name="txtKey" size="10" onKeyDown="return onKeyDown()" / -->						
+					</div></td>
+					<td align="right">
+						<input type="button" name="btnSave" value="Сохранить" onClick="return onButtonClick()" />
+						<input type="button" name="btnCancel" value="Отмена" onClick="return onButtonClick()" />
+					</td>
+				</tr>
+			</table>
+		</div>
+	</form>
+</div>
+</center>
+</body>
+</html>

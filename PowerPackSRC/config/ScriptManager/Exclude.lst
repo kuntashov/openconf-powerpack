@@ -1,0 +1,2 @@
+\.(txt|wsc|ion|ert|st|pm)$
+^ChangeLog$

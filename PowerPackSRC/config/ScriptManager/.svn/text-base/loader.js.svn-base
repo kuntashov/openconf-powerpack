@@ -1,0 +1,4 @@
+// Загружаем наш "псевдо-обработчик" нажатий клавиш-хоткеев
+Scripts.Load(BinDir + "config\\system\\ScriptManager\\HotKeysHandler.js")
+// ...и выгружаем себя за ненадобностью
+Scripts.UnLoad(SelfScript.Name)

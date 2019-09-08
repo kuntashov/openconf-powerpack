@@ -1,0 +1,18 @@
+/.cvsignore/1.1/Fri Jul 22 16:20:11 2005//
+/Installer.txt/1.2/Fri Aug  5 13:52:57 2005//
+/OpenConf.ini/1.1/Fri Jul 22 16:20:11 2005//
+/OpenConf.nsi/1.2/Fri Aug  5 13:52:57 2005//
+/TODO.txt/1.2/Fri Aug  5 13:52:57 2005//
+/addons.nsh/1.1/Fri Aug  5 14:15:06 2005//
+/build.bat/1.1/Fri Jul 22 16:20:11 2005//
+/clear.bat/1.1/Fri Jul 22 16:20:11 2005//
+/docs.nsh/1.1/Fri Jul 22 16:20:11 2005//
+/parameters.nsh/1.2/Fri Aug  5 13:52:57 2005//
+/system.nsh/1.1/Fri Jul 22 16:20:11 2005//
+/system.nsh.pl/1.2/Fri Aug  5 13:52:57 2005//
+/utils.nsh/1.3/Fri Aug  5 15:16:44 2005//
+D/plugins////
+D/release////
+D/resources////
+D/scripts////
+D/tools////

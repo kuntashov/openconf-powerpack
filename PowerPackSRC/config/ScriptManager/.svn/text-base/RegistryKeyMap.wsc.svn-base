@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<!--
+	Copyright (c) 2005 OpenConf Community <http://openconf.itland.ru>
+
+	$Id: $
+
+	Авторы:  
+		Александр Кунташов aka a13x <kuntashov@yandex.ru> icq#338758861  
+-->
+<package>
+<component>
+<?component error="true" debug="true"?>
+
+<registration
+	description="RegistryKeyMap component for OpenConf"
+	progid="OpenConf.RegistryKeyMap"
+	version="1.00"
+	classid="{20ED58EC-C193-4EA3-BA35-3C7967C9AFDE}">
+</registration>
+
+<object id="REG" progid="kuntashov.Registry" />
+<object id="HK" progid="Scripting.Dictionary" />
+
+<public>
+
+	<property name="RootKey">
+		<get />
+		<put />
+	</property>
+
+	<method name="SetModified" />
+	<property name="Modified" >
+		<get />
+	</property>
+
+	<property name="HotKeyInfo">
+		<get />
+	</property>
+
+	<method name="Count" />
+	<method name="Codes" />
+	
+	<method name="Add">
+		<parameter name="code" />
+		<parameter name="IsScript" />
+		<parameter name="modul" />
+		<parameter name="macros" />
+	</method>
+
+	<method name="Del">
+		<parameter name="code"/>
+	</method>
+
+	<method name="Save" />
+	<method name="Load" />
+
+	<method name="Close" />
+
+</public>
+
+<script language="JavaScript">
+<![CDATA[
+
+var description = new RegistryKeyMap;
+
+REG.CurrentKey = "HKEY_CURRENT_USER\\Software\\1C\\1Cv7\\7.7\\OpenConf\\HotKeys";
+var Modified = false;
+
+function RegistryKeyMap()
+{
+	this.get_RootKey = get_RootKey;
+	this.put_RootKey = put_RootKey;
+
+	this.get_Modified = get_Modified;
+	this.SetModified = SetModified;
+
+	this.get_HotKeyInfo = get_HotKeyInfo;
+
+	this.Count = Count;
+	this.Codes = Codes;
+	this.Add = Add;
+	this.Del = Del;
+
+	this.Load = Load;
+	this.Save = Save;	
+
+	this.Close = Close;
+}
+
+function get_RootKey()
+{
+	return REG.CurrentKey;
+}
+
+function put_RootKey(newValue)
+{
+	REG.OpenKey(newValue);
+}
+
+function get_Modified()
+{
+	return Modified;
+}
+
+function SetModified()
+{
+	Modified = true;
+}
+
+function get_HotKeyInfo(scan)
+{
+	if (HK.Exists(scan)) {
+		return HK.Item(scan);
+	}
+	return null;
+}
+
+function Count()
+{
+	return HK.Count;
+}
+
+function Codes()
+{
+	return HK.Keys();
+}
+
+function Add(code, IsScript, modul, macros)
+{
+	var hki = createComponent("OpenConfHotKeyInfo");
+	hki.Code	= code;
+	hki.IsScript= IsScript;
+	hki.Modul	= modul;
+	hki.Macros	= macros;
+	HK.Item(code) = hki;
+	SetModified();
+}
+
+function Del(code)
+{
+	if (HK.Exists(code)) {	
+		HK.Remove(code);
+		SetModified();
+	}
+}
+
+function ClearReg()
+{
+	var count = REG.SubKeysCount();
+	for (var i=0; i<count; i++) {
+		REG.DeleteSubKey(i.toString());
+	}
+}
+
+function ClearInfo()
+{
+	var all_info = (new VBArray(HK.Items())).toArray();
+	for(var i=0; i<all_info.length; i++) {
+		all_info[i].Parent = null;
+	}
+	HK.RemoveAll();
+}
+
+function Save()
+{
+	if (Modified) {
+		ClearReg();
+		var all_info = (new VBArray(HK.Items())).toArray();
+		for(var i=0; i<all_info.length; i++) {
+			REG.CreateSubKey(i.toString());								
+			var RegEntry = new ActiveXObject("kuntashov.Registry");
+			RegEntry.OpenKey(REG.BuildPath(REG.CurrentKey, i.toString()));			
+			all_info[i].Save(RegEntry);
+			RegEntry.Close();		
+		}
+	}
+}
+
+function Load()
+{
+	ClearInfo();
+	var count = REG.SubKeysCount();
+	for (var i=0; i<count; i++) {
+		var RegEntry = REG.SubKeys(i);		
+		var hki = createComponent("OpenConfHotKeyInfo");
+		hki.Load(RegEntry);		
+		HK.Add(hki.Code, hki);
+		RegEntry.Close();
+	}
+}
+
+function Close()
+{
+	ClearInfo();
+	REG.Close();
+	description = null;
+}
+
+]]></script>
+</component>
+<component id="OpenConfHotKeyInfo">
+<?component error="true" debug="true"?>
+<public>
+
+	<property name="Parent">
+		<get />
+		<put />
+	</property>	
+
+	<property name="Code">
+		<get />
+		<put />
+	</property>
+
+	<property name="IsScript">
+		<get />
+		<put />
+	</property>
+
+	<property name="Macros">
+		<get />
+		<put />
+	</property>
+
+	<property name="Modul">
+		<get />
+		<put />
+	</property>
+	
+	<method name="Save">
+		<parameter name="RegEntry" />
+	</method>
+
+	<method name="Load">
+		<parameter name="RegEntry" />
+	</method>
+	
+</public>
+<script language="JScript"><![CDATA[
+
+var Parent = null;
+
+var ThisObj = {
+	code		:  0, // REG_DWORD	 
+	IsScript	:  1, // REG_DWORD
+	modul		: "", // REG_SZ
+	macros		: ""  // REG_SZ
+}
+
+function get_Parent()
+{
+	return Parent;
+}
+
+function put_Parent(newValue)
+{
+	Parent = newValue;
+}
+
+function getProp(propName)
+{
+	return ThisObj[propName];
+}
+
+function putProp(propName, newValue)
+{
+	ThisObj[propName] = newValue;
+	if (Parent) {
+		Parent.SetModified();
+	}
+}
+
+function get_Code()
+{
+	return getProp('code');
+}
+
+function put_Code(newValue)
+{
+	putProp('code', newValue);
+}
+
+function get_IsScript()
+{
+	return new Boolean(getProp('IsScript'));
+}
+
+function put_IsScript(newValue)
+{
+	putProp('IsScript', newValue?1:0);
+}
+
+function get_Macros()
+{
+	return getProp('macros');
+}
+
+function put_Macros(newValue)
+{
+	putProp('macros', newValue);
+}
+
+function get_Modul()
+{
+	return getProp('modul');
+}
+
+function put_Modul(newValue)
+{
+	putProp('modul', newValue);
+}
+
+function Load(RegEntry)
+{
+	for (var prop in ThisObj) {
+		ThisObj[prop] = RegEntry.ReadValue(prop);
+	}
+}
+
+function Save(RegEntry)
+{
+	RegEntry.WriteValue("modul",	ThisObj["modul"],	"REG_SZ");
+	RegEntry.WriteValue("macros",	ThisObj["macros"],	"REG_SZ");
+	RegEntry.WriteValue("IsScript", ThisObj["IsScript"],"REG_DWORD");
+	RegEntry.WriteValue("code",		ThisObj["code"],	"REG_DWORD");
+}
+
+]]></script>
+</component>
+</package>

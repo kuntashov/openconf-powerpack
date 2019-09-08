@@ -1,0 +1,2441 @@
+MakeNSIS v2.0 - Copyright 1999-2004 Nullsoft, Inc.
+
+Portions Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler (zlib).
+Includes portions derived from bzip2 (see documentation for details).
+Portions Copyright (C) 1999-2003 Igor Pavlov (lzma).
+Contributors: nnop@newmail.ru, Ryan Geiss, Andras Varga, Drew Davidson, Peter Windridge, Dave Laundon, Robert Rainwater, Yaroslav Faybishenko, Jeff Doozan, Amir Szekely, Ximon Eighteen, et al.
+
+Command line defined: "OC_VerFile=1020b20060128"
+Processing config: 
+Processing plugin dlls: "C:\progra~1\NSIS\plugins\*.dll"
+ - advsplash::show
+ - Banner::destroy
+ - Banner::show
+ - BgImage::AddImage
+ - BgImage::AddText
+ - BgImage::Clear
+ - BgImage::Destroy
+ - BgImage::Redraw
+ - BgImage::SetBg
+ - BgImage::SetReturn
+ - BgImage::Sound
+ - Dialer::AttemptConnect
+ - Dialer::AutodialHangup
+ - Dialer::AutodialOnline
+ - Dialer::AutodialUnattended
+ - Dialer::GetConnectedState
+ - InstallOptions::dialog
+ - InstallOptions::initDialog
+ - InstallOptions::show
+ - LangDLL::LangDialog
+ - Math::Script
+ - nsExec::Exec
+ - nsExec::ExecToLog
+ - nsExec::ExecToStack
+ - nsisdl::download
+ - nsisdl::download_quiet
+ - splash::show
+ - StartMenu::Select
+ - System::Alloc
+ - System::Call
+ - System::Copy
+ - System::Free
+ - System::Get
+ - System::Int64Op
+ - System::Store
+ - UserInfo::GetAccountType
+ - UserInfo::GetName
+ - VPatch::vpatchfile
+
+!define: "MUI_INSERT_NSISCONF"=""
+
+Changing directory to: "C:\1Cv77\BIN\config\Install"
+
+Processing script file: "OpenConf.nsi"
+!include: "C:\progra~1\NSIS\Include\Sections.nsh"
+!define: "SECTIONS_INCLUDED"=""
+!define: "SF_SELECTED"="1"
+!define: "SF_SUBSEC"="2"
+!define: "SF_SUBSECEND"="4"
+!define: "SF_BOLD"="8"
+!define: "SF_RO"="16"
+!define: "SF_EXPAND"="32"
+!define: "SF_PSELECTED"="64"
+!define: "SECTION_OFF"="0xFFFFFFFE"
+!define: "INSTTYPE_1"="1"
+!define: "INSTTYPE_2"="2"
+!define: "INSTTYPE_3"="4"
+!define: "INSTTYPE_4"="8"
+!define: "INSTTYPE_5"="16"
+!define: "INSTTYPE_6"="32"
+!define: "INSTTYPE_7"="64"
+!define: "INSTTYPE_8"="128"
+!define: "INSTTYPE_9"="256"
+!define: "INSTTYPE_10"="512"
+!define: "INSTTYPE_11"="1024"
+!define: "INSTTYPE_12"="2048"
+!define: "INSTTYPE_13"="4096"
+!define: "INSTTYPE_14"="8192"
+!define: "INSTTYPE_15"="16384"
+!define: "INSTTYPE_16"="32768"
+!define: "INSTTYPE_17"="65536"
+!define: "INSTTYPE_18"="131072"
+!define: "INSTTYPE_19"="262144"
+!define: "INSTTYPE_20"="524288"
+!define: "INSTTYPE_21"="1048576"
+!define: "INSTTYPE_22"="2097152"
+!define: "INSTTYPE_23"="4194304"
+!define: "INSTTYPE_24"="8388608"
+!define: "INSTTYPE_25"="16777216"
+!define: "INSTTYPE_26"="33554432"
+!define: "INSTTYPE_27"="67108864"
+!define: "INSTTYPE_28"="134217728"
+!define: "INSTTYPE_29"="268435456"
+!define: "INSTTYPE_30"="536870912"
+!define: "INSTTYPE_31"="1073741824"
+!define: "INSTTYPE_32"="2147483648"
+!include: closed: "C:\progra~1\NSIS\Include\Sections.nsh"
+!include: "parameters.nsh"
+!define: "OC_VerDisplay"="1.0.2.0 (beta)"
+!define: "OC_BinDir"="..\.."
+!define: "OC_ConfigDir"=".."
+!define: "OC_ResDir"="resources"
+!define: "OC_ReleaseDir"="release"
+!define: "OC_LicenseFile"="resources\readme.txt"
+!define: "OC_StartMenuPage"=""
+!define: "OC_Uninstall"=""
+!define: "OC_Plugins"="plugins\plugins.nsh"
+!define: "OC_Scripts"="scripts\scripts.nsh"
+!define: "OC_System"="system.nsh"
+!define: "OC_AddOns"="addons.nsh"
+!include: closed: "parameters.nsh"
+OutFile: "release\oc1020b20060128.exe"
+SetCompressor: lzma
+InstType: 1="Полный"
+InstType: 2="Стандартный"
+InstType: 3="Минимальный"
+InstallDir: "$PROGRAMFILES\1Cv77\BIN"
+InstallRegKey: "HKLM\Software\OpenConf\Install\"
+!include: "C:\progra~1\NSIS\Include\MUI.nsh"
+!include: "C:\progra~1\NSIS\Contrib\Modern UI\System.nsh"
+NSIS Modern User Interface version 1.69 - © 2002-2004 Joost Verburg (C:\progra~1\NSIS\Contrib\Modern UI\System.nsh:11)
+!define: "MUI_VERBOSE"="3"
+!include: closed: "C:\progra~1\NSIS\Contrib\Modern UI\System.nsh"
+!include: closed: "C:\progra~1\NSIS\Include\MUI.nsh"
+Name: "OpenConf"
+Caption: "Установка OpenConf 1.0.2.0 (beta) для 1С:Предприятия 7.7"
+VAR "STARTMENU_FOLDER"
+VAR "hwnd"
+VAR "UPDATE"
+!include: "utils.nsh"
+Function: "AddFileToStartMenu"
+Pop: $0
+Pop: $1
+IfFileExists: "$INSTDIR\$1" ? 0 : end
+CreateShortCut: "$SMPROGRAMS\$STARTMENU_FOLDER\$0.lnk"->"$INSTDIR\$1"  icon:,0, showmode=0x0, hotkey=0x0, comment=
+FunctionEnd
+Function: "GetParent"
+Exch($R0,0)
+Push: $R1
+Push: $R2
+Push: $R3
+StrCpy $R1 "0" () ()
+StrLen $R2 "$R0"
+IntOp: $R1=$R1+1
+IntCmp $R1:$R2 equal=get, < 0, > get
+StrCpy $R3 "$R0" (1) (-$R1)
+StrCmp "$R3" "\" equal=get, nonequal=
+Goto: loop
+StrCpy $R0 "$R0" (-$R1) ()
+Pop: $R3
+Pop: $R2
+Pop: $R1
+Exch($R0,0)
+FunctionEnd
+!include: closed: "utils.nsh"
+!define: "MUI_ABORTWARNING"=""
+!define: "MUI_COMPONENTSPAGE_NODESC"=""
+!define: "MUI_WELCOMEPAGE_TITLE"="Вас приветствует мастер установки OpenConf 1.0.2.0 (beta)!"
+!define: "MUI_WELCOMEPAGE_TEXT"="Этот мастер поможет вам установить OpenConf 1.0.2.0 (beta) для 1С:Предприятия 7.7.\r\n\r\n  OpenConf - это программный продукт, разработанный Александром Орефковым, расширяющий стандартные возможности Конфигуратора 1С:Предприятия.\r\n\r\n  OpenConf предоставляет объектно - ориентированный интерфейс, позволяющий автоматизировать рутинную работу по конфигурированию с помощью скриптов на любых языках, поддерживающих технологию Active Scripting (например, VBScript и JScript) и плагинов на языках высокого уровня (С++, Delphi и т.п.) с использованием технологии COM.\r\n\r\n  $_CLICK"
+!insertmacro: MUI_PAGE_WELCOME
+!insertmacro: end of MUI_PAGE_WELCOME
+!insertmacro: MUI_PAGE_LICENSE
+!insertmacro: end of MUI_PAGE_LICENSE
+Page: custom (creator:MyDirectoryPageEnter) (leave:MyDirectoryPageLeave)
+!insertmacro: MUI_PAGE_COMPONENTS
+!insertmacro: end of MUI_PAGE_COMPONENTS
+!define: "MUI_STARTMENUPAGE_REGISTRY_ROOT"="HKCU"
+!define: "MUI_STARTMENUPAGE_REGISTRY_KEY"="Software\1C\1Cv7\7.7\OpenConf"
+!define: "MUI_STARTMENUPAGE_REGISTRY_VALUENAME"="Start Menu Folder"
+!insertmacro: MUI_PAGE_STARTMENU
+!insertmacro: end of MUI_PAGE_STARTMENU
+!insertmacro: MUI_PAGE_INSTFILES
+!insertmacro: end of MUI_PAGE_INSTFILES
+!define: "MUI_FINISHPAGE_LINK"="Посетите веб-сайт проекта Открытый Конфигуратор!"
+!define: "MUI_FINISHPAGE_LINK_LOCATION"="http://openconf.itland.ru/"
+!define: "MUI_FINISHPAGE_NOREBOOTSUPPORT"=""
+!insertmacro: MUI_PAGE_FINISH
+!insertmacro: end of MUI_PAGE_FINISH
+!insertmacro: MUI_UNPAGE_CONFIRM
+!insertmacro: end of MUI_UNPAGE_CONFIRM
+!insertmacro: MUI_UNPAGE_INSTFILES
+!insertmacro: end of MUI_UNPAGE_INSTFILES
+!insertmacro: MUI_LANGUAGE
+!insertmacro: end of MUI_LANGUAGE
+Section: "OpenConf 1.0.2.0 (beta) (обязательно)" ->(SecOpenConf)
+SectionIn: [0] [1] [2] [RO] 
+SetOutPath: "$INSTDIR"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка OpenConf..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+CreateDirectory: "$INSTDIR\config"
+CreateDirectory: "$INSTDIR\config\docs"
+CreateDirectory: "$INSTDIR\config\scripts"
+StrCmp "$UPDATE" "1" equal=core_files, nonequal=0
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка OpenConf | Перемещение config.dll..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+CopyFiles: "$INSTDIR\config.dll" -> "$INSTDIR\config", size=0KB
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка OpenConf | Копироание файлов..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+File: "Config.dll" 331264 bytes
+File: "config.tlb" 58204 bytes
+File: "OpenConf.chm" 55762 bytes
+CreateShortCut: "$INSTDIR\config\docs\OpenConf.lnk"->"$INSTDIR\OpenConf.chm"  icon:,0, showmode=0x0, hotkey=0x0, comment=
+SetOutPath: "$INSTDIR\config\docs"
+File: "readme.txt" 1456 bytes
+File: "OpenConf.history.txt" 7677 bytes
+File: "WhatsNew.txt" 2463 bytes
+WriteRegStr: HKLM\Software\1C\1Cv7\7.7\OpenConf\Install\=$INSTDIR
+WriteUninstaller: "$INSTDIR\config\Uninstall.exe"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка OpenConf | Создание программной группы и ярлыков..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+!insertmacro: MUI_STARTMENU_WRITE_BEGIN
+!insertmacro: end of MUI_STARTMENU_WRITE_BEGIN
+CreateDirectory: "$SMPROGRAMS\$STARTMENU_FOLDER"
+CreateDirectory: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация"
+CreateShortCut: "$SMPROGRAMS\$STARTMENU_FOLDER\Справка по OpenConf.lnk"->"$INSTDIR\OpenConf.chm"  icon:,0, showmode=0x0, hotkey=0x0, comment=
+CreateShortCut: "$SMPROGRAMS\$STARTMENU_FOLDER\ReadMe.lnk"->"$INSTDIR\config\docs\readme.txt"  icon:,0, showmode=0x0, hotkey=0x0, comment=
+CreateShortCut: "$SMPROGRAMS\$STARTMENU_FOLDER\История изменений OpenConf.lnk"->"$INSTDIR\config\docs\OpenConf.history.txt"  icon:,0, showmode=0x0, hotkey=0x0, comment=
+CreateShortCut: "$SMPROGRAMS\$STARTMENU_FOLDER\Что нового.lnk"->"$INSTDIR\config\docs\WhatsNew.txt"  icon:,0, showmode=0x0, hotkey=0x0, comment=
+CreateShortCut: "$SMPROGRAMS\$STARTMENU_FOLDER\Удаление OpenConf.lnk"->"$INSTDIR\config\Uninstall.exe"  icon:,0, showmode=0x0, hotkey=0x0, comment=
+!insertmacro: MUI_STARTMENU_WRITE_END
+!insertmacro: end of MUI_STARTMENU_WRITE_END
+SectionEnd
+!include: "plugins\plugins.nsh"
+SubSection Плагины
+Section: "-"PluginsBeforeInstall""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+!include: "plugins\Telepat20.nsh"
+SubSection Телепат 2.0
+Section: "-"TelepatBeforeInstall""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | Телепат 2.0..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+Section: "Плагин, документация"
+SectionIn: [0] [1] 
+SetOutPath: "$INSTDIR\config"
+File: "telepat.dll" 288256 bytes
+File: "1cv7srct.st" 2101 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "telepat.history.txt" 12661 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\Telepat.history.txt
+Push: Документация\Телепат 2.0 - История изменений
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+File: "telepat.chm" 33335 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\Telepat.chm
+Push: Документация\Телепат 2.0 - Справка
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SectionEnd
+Section: "Использовать альтернативную библиотеку иконок"
+SetOutPath: "$INSTDIR"
+File: "telepat.icl" 0 bytes
+SectionEnd
+Section: "Утилита xml2tls"
+SectionIn: [0] [1] 
+CreateDirectory: "$INSTDIR\config\system\xml2tls"
+SetOutPath: "$INSTDIR\config\system\xml2tls"
+File: "1cpplang.xml" 9654 bytes
+File: "xml2tls.exe" 36864 bytes
+File: "readme.txt" 3182 bytes
+!insertmacro: OC_ADD_FILE_TO_STARTMENU
+Push: config\system\xml2tls\readme.txt
+Push: Документация\Телепат 2.0 - Утилита xml2ts
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_FILE_TO_STARTMENU
+SectionEnd
+SubSectionEnd 
+!include: closed: "plugins\Telepat20.nsh"
+!include: "plugins\HistoryPlugin.nsh"
+Section: "История"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | История..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config"
+File: "HistoryPlugin.dll" 77824 bytes
+SectionEnd
+!include: closed: "plugins\HistoryPlugin.nsh"
+!include: "plugins\SubSystems.nsh"
+Section: "Подсистемы 1.3.3.3"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | Подсистемы..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config"
+File: "SubSystems.dll" 1581568 bytes
+File: "ClipboardHistory.exe" 656896 bytes
+IfFileExists: "$INSTDIR\config\SubSystemsData.mdb" ? +2 : 0
+File: "SubSystemsData.mdb" 413696 bytes
+SetOutPath: "$INSTDIR\config\scripts"
+File: "SubSystemsManage.vbs" 22731 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "SubSystems.readme.doc" 333824 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\SubSystems.readme.doc
+Push: Документация\Подсистемы - Справка
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+File: "ClipboardHistory.readme.txt" 520 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\ClipboardHistory.readme.txt
+Push: Документация\ClipboardHistory - Описание
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SectionEnd
+!include: closed: "plugins\SubSystems.nsh"
+!include: "plugins\ExtFormsTree.nsh"
+Section: "ExtForms Tree 1.2.1.2"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | ExtFormsTree..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config"
+File: "ExtFormsTree.dll" 775680 bytes
+File: "ExtFormsTree.tlb" 9584 bytes
+IfFileExists: "$INSTDIR\config\ExtFormsTree.txt" ? +2 : 0
+File: "ExtFormsTree.txt" 0 bytes
+SetOutPath: "$INSTDIR\config\scripts"
+File: "ExtFormsTreeManage.vbs" 3544 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "ExtFormsTree.readme.txt" 1203 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\ExtFormsTree.readme.txt
+Push: Документация\ExtFormsTree - Описание
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SectionEnd
+!include: closed: "plugins\ExtFormsTree.nsh"
+!include: "plugins\Oc2Vba.nsh"
+Section: "OC2VBA (VBA для OpenConf)"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | OC2VBA..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+StrCpy $R0 "" () ()
+ExpandEnvStrings: %CommonProgramFiles%->$R0
+StrCmp "$R0" "" equal=APC_Not_Installed, nonequal=0
+IfFileExists: "$R0\Microsoft Shared\VBA\VBA6\apc6*.dll" ? APC_Installed : APC_Not_Installed
+MessageBox: 64: "Для работы плагина OC2VBA требуется наличие
+установленного Application Programmability Components.
+Этот компонент не обнаружен у Вас в системе,
+поэтому плагин OC2VBA установлен не будет.
+Подробнее об установке OC2VBA можно прочитать в файле
+$INSTDIR\config\docs\Oc2Vba.readme.txt"
+Goto: Install_Readme
+SetOutPath: "$INSTDIR\config"
+File: "oc2vba.dll" 37888 bytes
+IfFileExists: "$INSTDIR\openconf.ocp" ? Install_Readme : 0
+SetOutPath: "$INSTDIR"
+File: "openconf.ocp" 93696 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "Oc2Vba.readme.txt" 3172 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\Oc2Vba.readme.txt
+Push: Документация\Oc2Vba - Справка
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SectionEnd
+!include: closed: "plugins\Oc2Vba.nsh"
+!include: "plugins\Vis1Cpp.nsh"
+Section: "Visual 1C++ 1.0.0.7"
+SectionIn: [0] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | Visual 1C++..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config"
+File: "vis1cpp.dll" 90112 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "Vis1Cpp.HISTORY.TXT" 1161 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\Vis1Cpp.history.txt
+Push: Документация\Visual 1C++ - История изменений
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+File: "Vis1Cpp.ReadMe.txt" 1590 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\Vis1Cpp.readme.txt
+Push: Документация\Visual 1C++ - Описание
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+File: "Vis1Cpp.README.DOC" 45568 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\Vis1Cpp.readme.doc
+Push: Документация\Visual 1C++ - Справка
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SectionEnd
+!include: closed: "plugins\Vis1Cpp.nsh"
+!include: "plugins\ClassesWizard.nsh"
+Section: "Classes Wizard 1.3.6"
+SectionIn: [0] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | Classes Wizard..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config"
+File: "ClassesWizard.dll" 540672 bytes
+SetOutPath: "$INSTDIR\config\scripts"
+File: "wizard1cpp.vbs" 3763 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "ClassesWizard.readme.txt" 2923 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\ClassesWizard.readme.txt
+Push: Документация\Classes Wizard - Описание
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SectionEnd
+!include: closed: "plugins\ClassesWizard.nsh"
+!include: "plugins\FDSubst.nsh"
+Section: "FDSubst (Расш. диалоги Открыть/Сохранить)"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | FDSubst..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config"
+File: "fdsubst.dll" 40448 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "FDSubst.readme.txt" 2859 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\FDSubst.readme.txt
+Push: Документация\FDSubst - Описание
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SectionEnd
+!include: closed: "plugins\FDSubst.nsh"
+!include: "plugins\Inspector2.nsh"
+Section: "Inspector 2"
+SectionIn: [0] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | Inspector 2..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config"
+File: "inspector2.dll" 742912 bytes
+SetOutPath: "$INSTDIR\config\scripts"
+File: "ManageInspector2.vbs" 1493 bytes
+SectionEnd
+!include: closed: "plugins\Inspector2.nsh"
+!include: "plugins\KbdProcs.nsh"
+Section: "KbdProcs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | KbdProcs..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config"
+File: "KbdProcs.dll" 391168 bytes
+SetOutPath: "$INSTDIR\config\scripts"
+File: "KbdProcsHandler.vbs" 7678 bytes
+SectionEnd
+!include: closed: "plugins\KbdProcs.nsh"
+Section: "-"PluginsAfterInstall""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка плагинов | Готово"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+SubSectionEnd 
+SubSection un."Плагины"
+Section: "un."PluginsBeforeUnInstall""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+!include: "plugins\un.Telepat20.nsh"
+SubSection un."Телепат ->(2.0r")
+Section: "un."TelepatBeforeUnInstall""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | Телепат 2.0..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+Section: "un."Плагин," ->(документация")
+Delete: "$INSTDIR\config\telepat.dll"
+Delete: "$INSTDIR\config\scripts\telepat.vbs"
+Delete: "$INSTDIR\config\docs\Telepat.history.txt"
+Delete: "$INSTDIR\config\docs\Telepat.chm"
+Delete: "$INSTDIR\telepat.icl"
+!insertmacro: OC_USERFRIENDLY_DELETE
+IfFileExists: "$INSTDIR\config\1cv7srct.st" ? 0 : +3
+MessageBox: 292: "Файл $INSTDIR\config\1cv7srct.st
+может хранить Ваши персональные настройки!
+Удалить этот файл независимо от этого?" (on IDNO goto +2)
+Delete: "$INSTDIR\config\1cv7srct.st"
+!insertmacro: end of OC_USERFRIENDLY_DELETE
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Телепат 2.0 - История изменений.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Телепат 2.0 - Справка.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+Section: "un."Утилита" ->(xml2tls")
+Delete: "$INSTDIR\config\system\xml2tls\1cpplang.xml"
+Delete: "$INSTDIR\config\system\xml2tls\readme.txt"
+Delete: "$INSTDIR\config\system\xml2tls\xml2tls.exe"
+!insertmacro: OC_DEL_FILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Телепат 2.0 - Утилита xml2ts.lnk"
+!insertmacro: end of OC_DEL_FILE_FROM_STARTMENU
+RMDir: "$INSTDIR\config\system\xml2tls"
+SectionEnd
+SubSectionEnd 
+!include: closed: "plugins\un.Telepat20.nsh"
+!include: "plugins\un.HistoryPlugin.nsh"
+Section: "un."История""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | История..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\historyPlugin.dll"
+Delete: "$INSTDIR\config\docs\HistoryPlugin.readme.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Плагин История - Справка.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "plugins\un.HistoryPlugin.nsh"
+!include: "plugins\un.SubSystems.nsh"
+Section: "un."Подсистемы""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | Подсистемы ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\SubSystems.dll"
+Delete: "$INSTDIR\config\SubSystems.tlb"
+Delete: "$INSTDIR\config\ClipboardHistory.exe"
+Delete: "$INSTDIR\config\scripts\SubSystemsManage.vbs"
+!insertmacro: OC_USERFRIENDLY_DELETE
+IfFileExists: "$INSTDIR\config\SubSystemsData.mdb" ? 0 : +3
+MessageBox: 292: "Файл $INSTDIR\config\SubSystemsData.mdb
+может хранить Ваши персональные настройки!
+Удалить этот файл независимо от этого?" (on IDNO goto +2)
+Delete: "$INSTDIR\config\SubSystemsData.mdb"
+!insertmacro: end of OC_USERFRIENDLY_DELETE
+IfFileExists: "$INSTDIR\config\SubSystemsData.mdb" ? +2 : 0
+Delete: "$INSTDIR\config\SubSystemsData.ldb"
+Delete: "$INSTDIR\config\docs\SubSystems.readme.doc"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Подсистемы - Справка.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$INSTDIR\config\docs\ClipboardHistory.readme.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\ClipboardHistory - Описание.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "plugins\un.SubSystems.nsh"
+!include: "plugins\un.ExtFormsTree.nsh"
+Section: "un."ExtFormsTree""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | ExtFormsTree..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\ExtFormsTree.dll"
+Delete: "$INSTDIR\config\ExtFormsTree.tlb"
+Delete: "$INSTDIR\config\scripts\ExtFormsTreeManage.vbs"
+!insertmacro: OC_USERFRIENDLY_DELETE
+IfFileExists: "$INSTDIR\config\ExtFormsTree.txt" ? 0 : +3
+MessageBox: 292: "Файл $INSTDIR\config\ExtFormsTree.txt
+может хранить Ваши персональные настройки!
+Удалить этот файл независимо от этого?" (on IDNO goto +2)
+Delete: "$INSTDIR\config\ExtFormsTree.txt"
+!insertmacro: end of OC_USERFRIENDLY_DELETE
+Delete: "$INSTDIR\config\docs\ExtFormsTree.readme.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\ExtFormsTree - Описание.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "plugins\un.ExtFormsTree.nsh"
+!include: "plugins\un.Oc2Vba.nsh"
+Section: "un."OC2VBA""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | OC2VBA..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\oc2vba.dll"
+!insertmacro: OC_USERFRIENDLY_DELETE
+IfFileExists: "$INSTDIR\openconf.ocp" ? 0 : +3
+MessageBox: 292: "Файл $INSTDIR\openconf.ocp
+может хранить Ваши персональные настройки!
+Удалить этот файл независимо от этого?" (on IDNO goto +2)
+Delete: "$INSTDIR\openconf.ocp"
+!insertmacro: end of OC_USERFRIENDLY_DELETE
+Delete: "$INSTDIR\config\docs\Oc2Vba.readme.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Oc2Vba - Справка.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "plugins\un.Oc2Vba.nsh"
+!include: "plugins\un.Vis1Cpp.nsh"
+Section: "un."Visual" ->(1C++")
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | Visual 1C++..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\vis1cpp.dll"
+Delete: "$INSTDIR\config\docs\Vis1Cpp.readme.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Visual 1C++ - Описание.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$INSTDIR\config\docs\Vis1Cpp.readme.doc"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Visual 1C++ - Справка.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$INSTDIR\config\docs\Vis1Cpp.history.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Visual 1C++ - История изменений.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "plugins\un.Vis1Cpp.nsh"
+!include: "plugins\un.ClassesWizard.nsh"
+Section: "un.Classes Wizard"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | Classes Wizard..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\ClassesWizard.dll"
+Delete: "$INSTDIR\config\scripts\wizard1cpp.vbs"
+Delete: "$INSTDIR\config\docs\ClassesWizard.readme.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Classes Wizard - Описание.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "plugins\un.ClassesWizard.nsh"
+!include: "plugins\un.FDSubst.nsh"
+Section: "un."FDSubst""
+SectionIn: [0] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | FDSubst..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\fdsubst.dll"
+Delete: "$INSTDIR\config\docs\FDSubst.readme.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\FDSubst - Описание.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "plugins\un.FDSubst.nsh"
+!include: "plugins\un.Inspector2.nsh"
+Section: "un."Inspector" ->(2")
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | Inspector 2..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\inspector2.dll"
+Delete: "$INSTDIR\config\scripts\ManageInspector2.vbs"
+SectionEnd
+!include: closed: "plugins\un.Inspector2.nsh"
+!include: "plugins\un.KbdProcs.nsh"
+Section: "un.KbdProcs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | KbdProcs..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\KbdProcs.dll"
+Delete: "$INSTDIR\config\scripts\KbdProcsHandler.vbs"
+SectionEnd
+!include: closed: "plugins\un.KbdProcs.nsh"
+Section: "un."AfterUninstallPlugins""
+RMDir: "$INSTDIR\config\system"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление плагинов | Готово"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+SubSectionEnd 
+!include: closed: "plugins\plugins.nsh"
+!include: "scripts\scripts.nsh"
+SubSection Скрипты
+!include: "scripts\scripts.auto.nsh"
+SubSection Ы
+SubSectionEnd 
+SubSection Редактирование
+!include: "scripts\author.nsh"
+Section: "author.js (Авторские комментарии)"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | author.js..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "author.js" 20010 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "authorJS.readme.htm" 28093 bytes
+!insertmacro: OC_ADD_FILE_TO_STARTMENU
+Push: authorJS.readme.htm
+Push: author.js - Справка
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_FILE_TO_STARTMENU
+SectionEnd
+!include: closed: "scripts\author.nsh"
+Section: "Brackets.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Brackets.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "Brackets.vbs" 7372 bytes
+SectionEnd
+Section: "mb_utils.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | mb_utils.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "mb_utils.js" 10149 bytes
+SectionEnd
+Section: "MultiString.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | MultiString.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "MultiString.js" 1945 bytes
+SectionEnd
+Section: "refactorer.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | refactorer.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "refactorer.js" 9766 bytes
+SectionEnd
+Section: "RTrimModule.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | RTrimModule.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "RTrimModule.vbs" 5738 bytes
+SectionEnd
+Section: "Замена кода.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Замена кода.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "Замена кода.vbs" 19157 bytes
+SectionEnd
+Section: "Копировать модуль в буфер обмена.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Копировать модуль в буфер обмена.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "Копировать модуль в буфер обмена.vbs" 2617 bytes
+SectionEnd
+Section: "Форматирование текста.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Форматирование текста.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Редактирование"
+File: "Форматирование текста.vbs" 7364 bytes
+SectionEnd
+SubSectionEnd 
+SubSection Разное
+Section: "1C++.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | 1C++.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "1C++.vbs" 277 bytes
+SectionEnd
+Section: "DocPath.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | DocPath.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "DocPath.js" 2284 bytes
+SectionEnd
+Section: "ParseCmdLineInConfig.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | ParseCmdLineInConfig.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "ParseCmdLineInConfig.vbs" 7126 bytes
+SectionEnd
+Section: "SetWinCaption.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | SetWinCaption.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "SetWinCaption.vbs" 888 bytes
+SectionEnd
+Section: "TelepatSettings.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | TelepatSettings.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "TelepatSettings.js" 3561 bytes
+SectionEnd
+Section: "TurboMD_Artur.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | TurboMD_Artur.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "TurboMD_Artur.vbs" 6134 bytes
+SectionEnd
+Section: "Меню всех макросов.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Меню всех макросов.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "Меню всех макросов.vbs" 3112 bytes
+SectionEnd
+!include: "scripts\Меню макросов из файла.nsh"
+Section: "Меню макросов из файла.vbs"
+SectionIn: [0] [1] 
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "Меню макросов из файла.vbs" 8586 bytes
+SetOutPath: "$INSTDIR\config"
+File: "Macros.ini" 4465 bytes
+File: "Macros_all.ini" 10907 bytes
+SectionEnd
+!include: closed: "scripts\Меню макросов из файла.nsh"
+Section: "Разработка скриптов.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Разработка скриптов.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "Разработка скриптов.vbs" 15585 bytes
+SectionEnd
+Section: "Сохранение открытых окон.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Сохранение открытых окон.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "Сохранение открытых окон.vbs" 6081 bytes
+SectionEnd
+Section: "УбратьНенужныеОкна1C.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | УбратьНенужныеОкна1C.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "УбратьНенужныеОкна1C.vbs" 3372 bytes
+SectionEnd
+SubSectionEnd 
+SubSection РаботаСФормами
+Section: "Конструкторы Элементов диалога.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Конструкторы Элементов диалога.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\РаботаСФормами"
+File: "Конструкторы Элементов диалога.vbs" 27601 bytes
+SectionEnd
+Section: "Редактор форм.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Редактор форм.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\РаботаСФормами"
+File: "Редактор форм.js" 22746 bytes
+SectionEnd
+Section: "Создать кнопку на форме.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Создать кнопку на форме.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\РаботаСФормами"
+File: "Создать кнопку на форме.vbs" 15450 bytes
+SectionEnd
+Section: "Создать процедуру и кнопку на форме.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Создать процедуру и кнопку на форме.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\РаботаСФормами"
+File: "Создать процедуру и кнопку на форме.vbs" 6650 bytes
+SectionEnd
+Section: "Шаблоны форм.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Шаблоны форм.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\РаботаСФормами"
+File: "Шаблоны форм.js" 16610 bytes
+SectionEnd
+SubSectionEnd 
+SubSection Общие
+Section: "Закрыть окно сообщений.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Закрыть окно сообщений.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Общие"
+File: "Закрыть окно сообщений.vbs" 389 bytes
+SectionEnd
+Section: "Клавиатура.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Клавиатура.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Общие"
+File: "Клавиатура.js" 4878 bytes
+SectionEnd
+Section: "Шорткаты.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Шорткаты.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Общие"
+File: "Шорткаты.vbs" 6031 bytes
+SectionEnd
+SubSectionEnd 
+SubSection Навигация
+Section: "FindText.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | FindText.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Навигация"
+File: "FindText.vbs" 5220 bytes
+SectionEnd
+Section: "jumper.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | jumper.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Навигация"
+File: "jumper.vbs" 7541 bytes
+SectionEnd
+Section: "NavigationTools.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | NavigationTools.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Навигация"
+File: "NavigationTools.vbs" 35038 bytes
+SectionEnd
+!include: "scripts\navigator.nsh"
+Section: "navigator.js (Навигатор)"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | navigator.js..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Навигация"
+File: "navigator.js" 15468 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "NavigatorJS.readme.txt" 6865 bytes
+!insertmacro: OC_ADD_FILE_TO_STARTMENU
+Push: navigatorJS.readme.txt
+Push: navigator.js - Справка
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_FILE_TO_STARTMENU
+SectionEnd
+!include: closed: "scripts\navigator.nsh"
+Section: "ScriptMethodList.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | ScriptMethodList.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Навигация"
+File: "ScriptMethodList.vbs" 2251 bytes
+SectionEnd
+Section: "Навигация.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Навигация.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Навигация"
+File: "Навигация.vbs" 24976 bytes
+SectionEnd
+Section: "Открыть файл из директивы ЗагрузитьИзФайла.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Открыть файл из директивы ЗагрузитьИзФайла.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Навигация"
+File: "Открыть файл из директивы ЗагрузитьИзФайла.vbs" 4316 bytes
+SectionEnd
+Section: "Переходы по модулю.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Переходы по модулю.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Навигация"
+File: "Переходы по модулю.vbs" 2179 bytes
+SectionEnd
+SubSectionEnd 
+SubSection Конструкторы
+Section: "Конструкторы бухитогов.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Конструкторы бухитогов.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Конструкторы"
+File: "Конструкторы бухитогов.vbs" 2286 bytes
+SectionEnd
+Section: "Конструкторы документов.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Конструкторы документов.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Конструкторы"
+File: "Конструкторы документов.vbs" 3786 bytes
+SectionEnd
+Section: "Конструкторы операций.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Конструкторы операций.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Конструкторы"
+File: "Конструкторы операций.vbs" 2857 bytes
+SectionEnd
+Section: "Конструкторы предопределенных процедур.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Конструкторы предопределенных процедур.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Конструкторы"
+File: "Конструкторы предопределенных процедур.vbs" 1537 bytes
+SectionEnd
+Section: "Конструкторы справочников.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Конструкторы справочников.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Конструкторы"
+File: "Конструкторы справочников.vbs" 4826 bytes
+SectionEnd
+Section: "Конструкторы ТЗ.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Конструкторы ТЗ.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Конструкторы"
+File: "Конструкторы ТЗ.vbs" 7437 bytes
+SectionEnd
+Section: "Таблица значений.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Таблица значений.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Конструкторы"
+File: "Таблица значений.vbs" 2464 bytes
+SectionEnd
+SubSectionEnd 
+SubSection ВерсионныйКонтроль
+Section: "cvs.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | cvs.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\ВерсионныйКонтроль"
+File: "cvs.vbs" 16086 bytes
+SectionEnd
+Section: "extforms.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | extforms.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\ВерсионныйКонтроль"
+File: "extforms.vbs" 6097 bytes
+SectionEnd
+Section: "Сравнить модуль.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Сравнить модуль.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\ВерсионныйКонтроль"
+File: "Сравнить модуль.vbs" 6332 bytes
+SectionEnd
+Section: "СравнитьОбъект.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | СравнитьОбъект.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\ВерсионныйКонтроль"
+File: "СравнитьОбъект.vbs" 3596 bytes
+SectionEnd
+SubSectionEnd 
+SubSection MD_Tasks
+Section: "autoload.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | autoload.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\MD_Tasks"
+File: "autoload.vbs" 2756 bytes
+SectionEnd
+Section: "ExtractAllReporstIntoExternalFiles.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | ExtractAllReporstIntoExternalFiles.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\MD_Tasks"
+File: "ExtractAllReporstIntoExternalFiles.vbs" 1861 bytes
+SectionEnd
+SubSectionEnd 
+SubSection Intellisence
+Section: "als2xml.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | als2xml.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Intellisence"
+File: "als2xml.js" 32730 bytes
+SectionEnd
+!include: "scripts\Intellisence.nsh"
+Section: "Intellisence.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Intellisence.vbs"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Intellisence"
+File: "Intellisence.vbs" 101111 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "Intellisence.readme.txt" 19521 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\Intellisence.readme.txt
+Push: Документация\Intellisence - Справка
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+CreateDirectory: "$INSTDIR\config\Intell"
+SetOutPath: "$INSTDIR\config\Intell"
+IfFileExists: "$INSTDIR\config\telepat.dll" ? 0 : no_telepat
+File: "intell.ini"->""intell.ini"" 1286 bytes
+Goto: copy_ints
+File: "intell_no_telepat.ini" 1287 bytes
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | *.ints файлы для Intellisence.vbs"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+File: "AddIn.AddInMail.ints" 1333 bytes
+File: "BinaryData.ints" 321 bytes
+File: "Compound.ints" 304 bytes
+File: "DynaCrypt.ints" 52 bytes
+File: "DynaValue.ints" 459 bytes
+File: "Guid.ints" 93 bytes
+File: "MetaDataWork.ints" 998 bytes
+File: "MetaInfoClasses.ints" 448 bytes
+File: "ODBCDataBase.ints" 346 bytes
+File: "ODBCRecordSet.ints" 1057 bytes
+File: "SQLLock.ints" 221 bytes
+File: "svcsvc_service.ints" 205 bytes
+File: "v77_Application.ints" 305 bytes
+File: "XBase.ints" 893 bytes
+File: "АтрибутФормы.ints" 279 bytes
+File: "БухгалтерскиеИтоги.ints" 882 bytes
+File: "ВидСубконто.ints" 83 bytes
+File: "ВидыСубконтоСписок.ints" 89 bytes
+File: "ВыполняемыйМодуль.ints" 319 bytes
+File: "Делегат.ints" 131 bytes
+File: "Документ.ints" 1575 bytes
+File: "ЖурналРасчетов.ints" 1186 bytes
+File: "Запрос.ints" 252 bytes
+File: "ИндексированнаяТаблица.ints" 946 bytes
+File: "Корреспонденция.ints" 33 bytes
+File: "МенеджерСобытий.ints" 193 bytes
+File: "Метаданные.ints" 2326 bytes
+File: "МетаданныеВидРасчета.ints" 262 bytes
+File: "МетаданныеВидРасчетаВытесняетВидРасчета.ints" 34 bytes
+File: "МетаданныеВидРасчетаВытесняетсяВидомРасчета.ints" 0/34 bytes
+File: "МетаданныеВидРасчетаГруппаРасчетов.ints" 0/34 bytes
+File: "МетаданныеВидСубконто.ints" 345 bytes
+File: "МетаданныеГрафаОтбора.ints" 226 bytes
+File: "МетаданныеГрафаОтбораСсылки.ints" 0/34 bytes
+File: "МетаданныеГруппаРасчетов.ints" 184 bytes
+File: "МетаданныеГруппаРасчетовВидРасчета.ints" 0/34 bytes
+File: "МетаданныеДокумент.ints" 695 bytes
+File: "МетаданныеДокументВводимыеНаОснованииДокументы.ints" 0/34 bytes
+File: "МетаданныеДокументРеквизитТабличнойЧасти.ints" 278 bytes
+File: "МетаданныеДокументРеквизитШапки.ints" 258 bytes
+File: "МетаданныеЖурнал.ints" 344 bytes
+File: "МетаданныеЖурналГрафа.ints" 180 bytes
+File: "МетаданныеЖурналГрафаСсылки.ints" 0/34 bytes
+File: "МетаданныеЖурналРасчетов.ints" 385 bytes
+File: "МетаданныеЖурналРасчетовРеквизит.ints" 0/258 bytes
+File: "МетаданныеЖурналРасчетовФормаСписка.ints" 167 bytes
+File: "МетаданныеЖурналФормаСписка.ints" 0/167 bytes
+File: "МетаданныеКалендарь.ints" 245 bytes
+File: "МетаданныеКонстанта.ints" 307 bytes
+File: "МетаданныеКорректныеПроводки.ints" 193 bytes
+File: "МетаданныеНумератор.ints" 274 bytes
+File: "МетаданныеОбработка.ints" 0/167 bytes
+File: "МетаданныеОбщийРеквизитДокумента.ints" 275 bytes
+File: "МетаданныеОтчет.ints" 0/167 bytes
+File: "МетаданныеПеречисление.ints" 185 bytes
+File: "МетаданныеПеречислениеЗначение.ints" 173 bytes
+File: "МетаданныеПланСчетов.ints" 276 bytes
+File: "МетаданныеПланСчетовСчет.ints" 253 bytes
+File: "МетаданныеПланСчетовСчетСубконто.ints" 220 bytes
+File: "МетаданныеПоследовательность.ints" 235 bytes
+File: "МетаданныеПоследовательностьВлияющиеДвижения.ints" 0/34 bytes
+File: "МетаданныеПоследовательностьДокументы.ints" 0/34 bytes
+File: "МетаданныеПравилоПерерасчета.ints" 261 bytes
+File: "МетаданныеПравилоПерерасчетаВедущийВидРасчета.ints" 0/34 bytes
+File: "МетаданныеПравилоПерерасчетаПодчиненныйВидРасчета.ints" 0/34 bytes
+File: "МетаданныеПраздники.ints" 76 bytes
+File: "МетаданныеРегистр.ints" 321 bytes
+File: "МетаданныеРегистрИзмерение.ints" 296 bytes
+File: "МетаданныеРегистрРеквизит.ints" 0/275 bytes
+File: "МетаданныеРегистрРесурс.ints" 0/258 bytes
+File: "МетаданныеРеквизитПроводки.ints" 0/275 bytes
+File: "МетаданныеРеквизитСчета.ints" 295 bytes
+File: "МетаданныеСправочник.ints" 591 bytes
+File: "МетаданныеСправочникРеквизит.ints" 377 bytes
+File: "МетаданныеСправочникФормаСписка.ints" 0/167 bytes
+File: "МетаданныеТиповыеОперации.ints" 0/193 bytes
+File: "МетаданныеФормаЖурналаОпераций.ints" 0/167 bytes
+File: "МетаданныеФормаЖурналаПроводок.ints" 0/167 bytes
+File: "МетаданныеФормаСпискаСчетов.ints" 0/167 bytes
+File: "Операция.ints" 1190 bytes
+File: "Перечисление.ints" 99 bytes
+File: "Перечислениевид.ints" 89 bytes
+File: "Периодический.ints" 352 bytes
+File: "Последовательность.ints" 224 bytes
+File: "ПроводкаДокумента.ints" 1690 bytes
+File: "РаботаСРегистромWin.ints" 320 bytes
+File: "РасширениеТаблицы.ints" 16 bytes
+File: "РасширениеФормы.ints" 713 bytes
+File: "Регистр.ints" 942 bytes
+File: "СервисРасшФормы.ints" 428 bytes
+File: "СоздатьОбъект.ints" 1157 bytes
+File: "СписокЗначений.ints" 507 bytes
+File: "Справочник.ints" 1001 bytes
+File: "Структура.ints" 124 bytes
+File: "Счет.ints" 873 bytes
+File: "Таблица.ints" 1165 bytes
+File: "ТаблицаЗначений.ints" 806 bytes
+File: "Текст.ints" 299 bytes
+File: "УскорительГК.ints" 16 bytes
+File: "Форма.ints" 389 bytes
+File: "ФормаАтрибут.ints" 249 bytes
+File: "ФС.ints" 391 bytes
+SectionEnd
+!include: closed: "scripts\Intellisence.nsh"
+Section: "Intellisence_DocRef.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | Intellisence_DocRef.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Intellisence"
+File: "Intellisence_DocRef.vbs" 3279 bytes
+SectionEnd
+!include: "scripts\intsOLEGenerator.nsh"
+Section: "intsOLEGenerator.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | intsOLEGenerator.vbs..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Intellisence"
+File: "intsOLEGenerator.vbs" 44964 bytes
+SetOutPath: "$INSTDIR\config\docs"
+File: "intsOLEGenerator.vbs.txt" 3390 bytes
+!insertmacro: OC_ADD_FILE_TO_STARTMENU
+Push: intsOLEGenerator.vbs.txt
+Push: intsOLEGenerator.vbs - Справка
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_FILE_TO_STARTMENU
+SectionEnd
+!include: closed: "scripts\intsOLEGenerator.nsh"
+Section: "VimComplete.js"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка скриптов | VimComplete.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\scripts\Intellisence"
+File: "VimComplete.js" 11660 bytes
+SectionEnd
+SubSectionEnd 
+!include: closed: "scripts\scripts.auto.nsh"
+SubSectionEnd 
+SubSection un."Скрипты"
+!include: "scripts\un.scripts.auto.nsh"
+SubSection un."Ы"
+Section: "un.AfterUnInstallЫ"
+RMDir: "$INSTDIR\config\scripts\Ы"
+SectionEnd
+SubSectionEnd 
+SubSection un."Редактирование"
+!include: "scripts\un.author.nsh"
+Section: "un.author.js (Авторские комментарии)"
+SectionIn: [0] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | author.js..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\author.js"
+Delete: "$INSTDIR\config\docs\authorJS.readme.htm"
+!insertmacro: OC_DEL_FILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\author.js - Справка.lnk"
+!insertmacro: end of OC_DEL_FILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "scripts\un.author.nsh"
+Section: "un.Brackets.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Brackets.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\Brackets.vbs"
+SectionEnd
+Section: "un.mb_utils.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | mb_utils.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\mb_utils.js"
+SectionEnd
+Section: "un.MultiString.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | MultiString.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\MultiString.js"
+SectionEnd
+Section: "un.refactorer.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | refactorer.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\refactorer.js"
+SectionEnd
+Section: "un.RTrimModule.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | RTrimModule.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\RTrimModule.vbs"
+SectionEnd
+Section: "un.Замена кода.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Замена кода.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\Замена кода.vbs"
+SectionEnd
+Section: "un.Копировать модуль в буфер обмена.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Копировать модуль в буфер обмена.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\Копировать модуль в буфер обмена.vbs"
+SectionEnd
+Section: "un.Форматирование текста.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Форматирование текста.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Редактирование\Форматирование текста.vbs"
+SectionEnd
+Section: "un.AfterUnInstallРедактирование"
+RMDir: "$INSTDIR\config\scripts\Редактирование"
+SectionEnd
+SubSectionEnd 
+SubSection un."Разное"
+Section: "un.1C++.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | 1C++.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\1C++.vbs"
+SectionEnd
+Section: "un.DocPath.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | DocPath.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\DocPath.js"
+SectionEnd
+Section: "un.ParseCmdLineInConfig.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | ParseCmdLineInConfig.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\ParseCmdLineInConfig.vbs"
+SectionEnd
+Section: "un.SetWinCaption.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | SetWinCaption.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\SetWinCaption.vbs"
+SectionEnd
+Section: "un.TelepatSettings.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | TelepatSettings.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\TelepatSettings.js"
+SectionEnd
+Section: "un.TurboMD_Artur.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | TurboMD_Artur.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\TurboMD_Artur.vbs"
+SectionEnd
+Section: "un.Меню всех макросов.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Меню всех макросов.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\Меню всех макросов.vbs"
+SectionEnd
+!include: "scripts\un.Меню макросов из файла.nsh"
+Section: "un.Меню макросов из файла.vbs"
+Delete: "$INSTDIR\config\scripts\Разное\Меню макросов из файла.vbs"
+Delete: "$INSTDIR\config\Macros_all.ini"
+!insertmacro: OC_USERFRIENDLY_DELETE
+IfFileExists: "$INSTDIR\config\Macros.ini" ? 0 : +3
+MessageBox: 292: "Файл $INSTDIR\config\Macros.ini
+может хранить Ваши персональные настройки!
+Удалить этот файл независимо от этого?" (on IDNO goto +2)
+Delete: "$INSTDIR\config\Macros.ini"
+!insertmacro: end of OC_USERFRIENDLY_DELETE
+SectionEnd
+!include: closed: "scripts\un.Меню макросов из файла.nsh"
+Section: "un.Разработка скриптов.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Разработка скриптов.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\Разработка скриптов.vbs"
+SectionEnd
+Section: "un.Сохранение открытых окон.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Сохранение открытых окон.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\Сохранение открытых окон.vbs"
+SectionEnd
+Section: "un.УбратьНенужныеОкна1C.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | УбратьНенужныеОкна1C.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Разное\УбратьНенужныеОкна1C.vbs"
+SectionEnd
+Section: "un.AfterUnInstallРазное"
+RMDir: "$INSTDIR\config\scripts\Разное"
+SectionEnd
+SubSectionEnd 
+SubSection un."РаботаСФормами"
+Section: "un.Конструкторы Элементов диалога.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Конструкторы Элементов диалога.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\РаботаСФормами\Конструкторы Элементов диалога.vbs"
+SectionEnd
+Section: "un.Редактор форм.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Редактор форм.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\РаботаСФормами\Редактор форм.js"
+SectionEnd
+Section: "un.Создать кнопку на форме.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Создать кнопку на форме.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\РаботаСФормами\Создать кнопку на форме.vbs"
+SectionEnd
+Section: "un.Создать процедуру и кнопку на форме.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Создать процедуру и кнопку на форме.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\РаботаСФормами\Создать процедуру и кнопку на форме.vbs"
+SectionEnd
+Section: "un.Шаблоны форм.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Шаблоны форм.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\РаботаСФормами\Шаблоны форм.js"
+SectionEnd
+Section: "un.AfterUnInstallРаботаСФормами"
+RMDir: "$INSTDIR\config\scripts\РаботаСФормами"
+SectionEnd
+SubSectionEnd 
+SubSection un."Общие"
+Section: "un.Закрыть окно сообщений.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Закрыть окно сообщений.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Общие\Закрыть окно сообщений.vbs"
+SectionEnd
+Section: "un.Клавиатура.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Клавиатура.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Общие\Клавиатура.js"
+SectionEnd
+Section: "un.Шорткаты.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Шорткаты.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Общие\Шорткаты.vbs"
+SectionEnd
+Section: "un.AfterUnInstallОбщие"
+RMDir: "$INSTDIR\config\scripts\Общие"
+SectionEnd
+SubSectionEnd 
+SubSection un."Навигация"
+Section: "un.FindText.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | FindText.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Навигация\FindText.vbs"
+SectionEnd
+Section: "un.jumper.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | jumper.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Навигация\jumper.vbs"
+SectionEnd
+Section: "un.NavigationTools.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | NavigationTools.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Навигация\NavigationTools.vbs"
+SectionEnd
+!include: "scripts\un.navigator.nsh"
+Section: "un.navigator.js"
+Delete: "$INSTDIR\config\scripts\Навигация\navigator.js"
+Delete: "$INSTDIR\config\docs\navigatorJS.readme.txt"
+!insertmacro: OC_DEL_FILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\navigator.js - Описание.lnk"
+!insertmacro: end of OC_DEL_FILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "scripts\un.navigator.nsh"
+Section: "un.ScriptMethodList.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | ScriptMethodList.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Навигация\ScriptMethodList.vbs"
+SectionEnd
+Section: "un.Навигация.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Навигация.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Навигация\Навигация.vbs"
+SectionEnd
+Section: "un.Открыть файл из директивы ЗагрузитьИзФайла.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Открыть файл из директивы ЗагрузитьИзФайла.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Навигация\Открыть файл из директивы ЗагрузитьИзФайла.vbs"
+SectionEnd
+Section: "un.Переходы по модулю.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Переходы по модулю.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Навигация\Переходы по модулю.vbs"
+SectionEnd
+Section: "un.AfterUnInstallНавигация"
+RMDir: "$INSTDIR\config\scripts\Навигация"
+SectionEnd
+SubSectionEnd 
+SubSection un."Конструкторы"
+Section: "un.Конструкторы бухитогов.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Конструкторы бухитогов.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Конструкторы\Конструкторы бухитогов.vbs"
+SectionEnd
+Section: "un.Конструкторы документов.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Конструкторы документов.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Конструкторы\Конструкторы документов.vbs"
+SectionEnd
+Section: "un.Конструкторы операций.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Конструкторы операций.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Конструкторы\Конструкторы операций.vbs"
+SectionEnd
+Section: "un.Конструкторы предопределенных процедур.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Конструкторы предопределенных процедур.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Конструкторы\Конструкторы предопределенных процедур.vbs"
+SectionEnd
+Section: "un.Конструкторы справочников.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Конструкторы справочников.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Конструкторы\Конструкторы справочников.vbs"
+SectionEnd
+Section: "un.Конструкторы ТЗ.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Конструкторы ТЗ.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Конструкторы\Конструкторы ТЗ.vbs"
+SectionEnd
+Section: "un.Таблица значений.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Таблица значений.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Конструкторы\Таблица значений.vbs"
+SectionEnd
+Section: "un.AfterUnInstallКонструкторы"
+RMDir: "$INSTDIR\config\scripts\Конструкторы"
+SectionEnd
+SubSectionEnd 
+SubSection un."ВерсионныйКонтроль"
+Section: "un.cvs.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | cvs.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\ВерсионныйКонтроль\cvs.vbs"
+SectionEnd
+Section: "un.extforms.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | extforms.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\ВерсионныйКонтроль\extforms.vbs"
+SectionEnd
+Section: "un.Сравнить модуль.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Сравнить модуль.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\ВерсионныйКонтроль\Сравнить модуль.vbs"
+SectionEnd
+Section: "un.СравнитьОбъект.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | СравнитьОбъект.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\ВерсионныйКонтроль\СравнитьОбъект.vbs"
+SectionEnd
+Section: "un.AfterUnInstallВерсионныйКонтроль"
+RMDir: "$INSTDIR\config\scripts\ВерсионныйКонтроль"
+SectionEnd
+SubSectionEnd 
+SubSection un."MD_Tasks"
+Section: "un.autoload.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | autoload.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\MD_Tasks\autoload.vbs"
+SectionEnd
+Section: "un.ExtractAllReporstIntoExternalFiles.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | ExtractAllReporstIntoExternalFiles.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\MD_Tasks\ExtractAllReporstIntoExternalFiles.vbs"
+SectionEnd
+Section: "un.AfterUnInstallMD_Tasks"
+RMDir: "$INSTDIR\config\scripts\MD_Tasks"
+SectionEnd
+SubSectionEnd 
+SubSection un."Intellisence"
+Section: "un.als2xml.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | als2xml.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Intellisence\als2xml.js"
+SectionEnd
+!include: "scripts\un.Intellisence.nsh"
+!include: "scripts\un.Intell.auto.nsh"
+Section: "un."Intellisence.vbs""
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Intellisence.vbs"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Intellisence\Intellisence.vbs"
+!insertmacro: OC_USERFRIENDLY_DELETE
+IfFileExists: "$INSTDIR\config\Intell\Intell.ini" ? 0 : +3
+MessageBox: 292: "Файл $INSTDIR\config\Intell\Intell.ini
+может хранить Ваши персональные настройки!
+Удалить этот файл независимо от этого?" (on IDNO goto +2)
+Delete: "$INSTDIR\config\Intell\Intell.ini"
+!insertmacro: end of OC_USERFRIENDLY_DELETE
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Intellisence - Справка.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$INSTDIR\config\docs\Intellisence.readme.txt"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Удаление *.ints файлов"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\Intell\AddIn.AddInMail.ints"
+Delete: "$INSTDIR\config\Intell\BinaryData.ints"
+Delete: "$INSTDIR\config\Intell\Compound.ints"
+Delete: "$INSTDIR\config\Intell\DynaCrypt.ints"
+Delete: "$INSTDIR\config\Intell\DynaValue.ints"
+Delete: "$INSTDIR\config\Intell\Guid.ints"
+Delete: "$INSTDIR\config\Intell\MetaDataWork.ints"
+Delete: "$INSTDIR\config\Intell\MetaInfoClasses.ints"
+Delete: "$INSTDIR\config\Intell\ODBCDataBase.ints"
+Delete: "$INSTDIR\config\Intell\ODBCRecordSet.ints"
+Delete: "$INSTDIR\config\Intell\SQLLock.ints"
+Delete: "$INSTDIR\config\Intell\svcsvc_service.ints"
+Delete: "$INSTDIR\config\Intell\v77_Application.ints"
+Delete: "$INSTDIR\config\Intell\XBase.ints"
+Delete: "$INSTDIR\config\Intell\АтрибутФормы.ints"
+Delete: "$INSTDIR\config\Intell\БухгалтерскиеИтоги.ints"
+Delete: "$INSTDIR\config\Intell\ВидСубконто.ints"
+Delete: "$INSTDIR\config\Intell\ВидыСубконтоСписок.ints"
+Delete: "$INSTDIR\config\Intell\ВыполняемыйМодуль.ints"
+Delete: "$INSTDIR\config\Intell\Делегат.ints"
+Delete: "$INSTDIR\config\Intell\Документ.ints"
+Delete: "$INSTDIR\config\Intell\ЖурналРасчетов.ints"
+Delete: "$INSTDIR\config\Intell\Запрос.ints"
+Delete: "$INSTDIR\config\Intell\ИндексированнаяТаблица.ints"
+Delete: "$INSTDIR\config\Intell\Корреспонденция.ints"
+Delete: "$INSTDIR\config\Intell\МенеджерСобытий.ints"
+Delete: "$INSTDIR\config\Intell\Метаданные.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеВидРасчета.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеВидРасчетаВытесняетВидРасчета.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеВидРасчетаВытесняетсяВидомРасчета.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеВидРасчетаГруппаРасчетов.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеВидСубконто.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеГрафаОтбора.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеГрафаОтбораСсылки.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеГруппаРасчетов.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеГруппаРасчетовВидРасчета.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеДокумент.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеДокументВводимыеНаОснованииДокументы.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеДокументРеквизитТабличнойЧасти.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеДокументРеквизитШапки.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеЖурнал.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеЖурналГрафа.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеЖурналГрафаСсылки.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеЖурналРасчетов.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеЖурналРасчетовРеквизит.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеЖурналРасчетовФормаСписка.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеЖурналФормаСписка.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеКалендарь.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеКонстанта.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеКорректныеПроводки.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеНумератор.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеОбработка.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеОбщийРеквизитДокумента.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеОтчет.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПеречисление.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПеречислениеЗначение.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПланСчетов.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПланСчетовСчет.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПланСчетовСчетСубконто.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПоследовательность.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПоследовательностьВлияющиеДвижения.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПоследовательностьДокументы.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПравилоПерерасчета.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПравилоПерерасчетаВедущийВидРасчета.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПравилоПерерасчетаПодчиненныйВидРасчета.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеПраздники.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеРегистр.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеРегистрИзмерение.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеРегистрРеквизит.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеРегистрРесурс.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеРеквизитПроводки.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеРеквизитСчета.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеСправочник.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеСправочникРеквизит.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеСправочникФормаСписка.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеТиповыеОперации.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеФормаЖурналаОпераций.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеФормаЖурналаПроводок.ints"
+Delete: "$INSTDIR\config\Intell\МетаданныеФормаСпискаСчетов.ints"
+Delete: "$INSTDIR\config\Intell\Операция.ints"
+Delete: "$INSTDIR\config\Intell\Перечисление.ints"
+Delete: "$INSTDIR\config\Intell\Перечислениевид.ints"
+Delete: "$INSTDIR\config\Intell\Периодический.ints"
+Delete: "$INSTDIR\config\Intell\Последовательность.ints"
+Delete: "$INSTDIR\config\Intell\ПроводкаДокумента.ints"
+Delete: "$INSTDIR\config\Intell\РаботаСРегистромWin.ints"
+Delete: "$INSTDIR\config\Intell\РасширениеТаблицы.ints"
+Delete: "$INSTDIR\config\Intell\РасширениеФормы.ints"
+Delete: "$INSTDIR\config\Intell\Регистр.ints"
+Delete: "$INSTDIR\config\Intell\СервисРасшФормы.ints"
+Delete: "$INSTDIR\config\Intell\СоздатьОбъект.ints"
+Delete: "$INSTDIR\config\Intell\СписокЗначений.ints"
+Delete: "$INSTDIR\config\Intell\Справочник.ints"
+Delete: "$INSTDIR\config\Intell\Структура.ints"
+Delete: "$INSTDIR\config\Intell\Счет.ints"
+Delete: "$INSTDIR\config\Intell\Таблица.ints"
+Delete: "$INSTDIR\config\Intell\ТаблицаЗначений.ints"
+Delete: "$INSTDIR\config\Intell\Текст.ints"
+Delete: "$INSTDIR\config\Intell\УскорительГК.ints"
+Delete: "$INSTDIR\config\Intell\Форма.ints"
+Delete: "$INSTDIR\config\Intell\ФормаАтрибут.ints"
+Delete: "$INSTDIR\config\Intell\ФС.ints"
+RMDir: "$INSTDIR\config\Intell"
+SectionEnd
+!include: closed: "scripts\un.Intell.auto.nsh"
+!include: closed: "scripts\un.Intellisence.nsh"
+Section: "un.Intellisence_DocRef.vbs"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | Intellisence_DocRef.vbs ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Intellisence\Intellisence_DocRef.vbs"
+SectionEnd
+!include: "scripts\un.intsOLEGenerator.nsh"
+Section: "un.intsOLEGenerator.vbs"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | intsOLEGenerator.vbs..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Intellisence\intsOLEGenerator.vbs"
+Delete: "$INSTDIR\config\docs\intsOLEGenerator.vbs.txt"
+!insertmacro: OC_DEL_FILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\intsOLEGenerator.vbs - Справка.lnk"
+!insertmacro: end of OC_DEL_FILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "scripts\un.intsOLEGenerator.nsh"
+Section: "un.VimComplete.js"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление скриптов | VimComplete.js ..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\scripts\Intellisence\VimComplete.js"
+SectionEnd
+Section: "un.AfterUnInstallIntellisence"
+RMDir: "$INSTDIR\config\scripts\Intellisence"
+SectionEnd
+SubSectionEnd 
+!include: closed: "scripts\un.scripts.auto.nsh"
+SubSectionEnd 
+!include: closed: "scripts\scripts.nsh"
+!include: "addons.nsh"
+Section: "Утилита OpenIn1C"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка OpenConf | Утилита OpenIn1C..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\system"
+File: "OpenIn1C.exe" 16384 bytes
+File: "Register_OpenIn1C.vbs" 2823 bytes
+SetOutPath: "$INSTDIR\config\scripts\Разное"
+File: "ОткрытьВПредприятии.vbs" 3440 bytes
+ExecWait: "wscript.exe	"$INSTDIR\config\system\Register_OpenIn1C.vbs" "$INSTDIR\config\system\OpenIn1C.exe"" (->)
+SectionEnd
+Section: "un.Утилита OpenIn1C"
+SectionIn: [0] [1] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление OpenConf | Утилита OpenIn1C..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\system\OpenIn1C.exe"
+Delete: "$INSTDIR\config\system\Register_OpenIn1C.vbs"
+Delete: "$INSTDIR\config\scripts\Разное\ОткрытьВПредприятии.vbs"
+RMDir: "$INSTDIR\config\scripts\Разное"
+RMDir: "$INSTDIR\config\scripts"
+SectionEnd
+Section: "Клавиатурные сокращения"
+SectionIn: [0] 
+SetOutPath: "$INSTDIR\config\system"
+File: "HotKeys.reg" 7186 bytes
+ExecWait: "regedit /s "$INSTDIR\config\system\HotKeys.reg"" (->)
+SetOutPath: "$INSTDIR\config\docs"
+File: "HotKeysList.htm" 4269 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\HotKeysList.htm
+Push: Документация\Список клавиатурных сокращений
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SectionEnd
+Section: "un.Клавиатурные сокращения"
+Delete: "$INSTDIR\config\system\HotKeys.reg"
+Delete: "$INSTDIR\config\docs\HotKeysList.htm"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Список клавиатурных сокращений.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+SectionEnd
+!include: closed: "addons.nsh"
+!include: "system.nsh"
+!include: "system.auto.nsh"
+Section: "Компоненты (COM-dll, WSC)"
+SectionIn: [0] [1] [2] 
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка компонентов | Копирование файлов..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SetOutPath: "$INSTDIR\config\docs"
+File: "System.readme.txt" 5892 bytes
+!insertmacro: OC_ADD_DOCFILE_TO_STARTMENU
+Push: config\docs\System.readme.txt
+Push: Документация\Компоненты - Описание
+Call "AddFileToStartMenu"
+!insertmacro: end of OC_ADD_DOCFILE_TO_STARTMENU
+SetOutPath: "$INSTDIR\config\system"
+File: "fecho.exe" 2560 bytes
+File: "ArtWin.dll" 28672 bytes
+File: "dynwrap.dll" 36864 bytes
+File: "macrosenum.dll" 28672 bytes
+File: "SelectDialog.dll" 69632 bytes
+File: "SelectValue.dll" 122880 bytes
+File: "svcsvc.dll" 46592 bytes
+File: "TLBINF32.DLL" 153600 bytes
+File: "WshExtra.dll" 40960 bytes
+File: "1S.StatusIB.wsc" 4893 bytes
+File: "Collections.wsc" 13371 bytes
+File: "CommonServices.wsc" 55476 bytes
+File: "OpenConf.RegistryIniFile.wsc" 10422 bytes
+File: "Registry.wsc" 4171 bytes
+File: "SyntaxAnalysis.wsc" 16529 bytes
+File: "regfiles.js" 6143 bytes
+File: "regall.bat" 90 bytes
+File: "unregall.bat" 96 bytes
+SetOutPath: "$INSTDIR\config\system\DynWin9x"
+File: "dynwrap.dll" 36864 bytes
+File: "readme.txt" 341 bytes
+ClearErrors
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка компонентов | Регистрация компонентов..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+ExecWait: "wscript.exe //nologo "$INSTDIR\config\system\regfiles.js" /I /S /L" (->)
+IfErrors ?0:end
+MessageBox: 48: "Некоторые из компонентов (*.wsc- или *.dll-файлы)
+не были зарегестрированы корректно.
+Какие компоненты не были зарегистрированы можно узнать из файла
+$INSTDIR\config\system\regfiles.log.
+Подробную информацию об устранении этой ошибки можно найти в файле
+$INSTDIR\config\docs\System.readme.txt"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Установка компонентов | Готово"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+Section: "un.Компоненты (COM-dll, WSC)"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление компонентов | Отмена регистрации..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+IfFileExists: "$INSTDIR\config\system\regfiles.js" ? 0 : Delete_Files
+ExecWait: "wscript.exe //nologo "$INSTDIR\config\system\regfiles.js" /U /S" (->)
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление компонентов | Удаление файлов..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config\system\regfiles.log"
+Delete: "$INSTDIR\config\system\regfiles.js"
+Delete: "$INSTDIR\config\system\regall.bat"
+Delete: "$INSTDIR\config\system\unregall.bat"
+Delete: "$INSTDIR\config\system\fecho.exe"
+Delete: "$INSTDIR\config\system\ArtWin.dll"
+Delete: "$INSTDIR\config\system\dynwrap.dll"
+Delete: "$INSTDIR\config\system\macrosenum.dll"
+Delete: "$INSTDIR\config\system\SelectDialog.dll"
+Delete: "$INSTDIR\config\system\SelectValue.dll"
+Delete: "$INSTDIR\config\system\svcsvc.dll"
+Delete: "$INSTDIR\config\system\TLBINF32.DLL"
+Delete: "$INSTDIR\config\system\WshExtra.dll"
+Delete: "$INSTDIR\config\system\1S.StatusIB.wsc"
+Delete: "$INSTDIR\config\system\Collections.wsc"
+Delete: "$INSTDIR\config\system\CommonServices.wsc"
+Delete: "$INSTDIR\config\system\OpenConf.RegistryIniFile.wsc"
+Delete: "$INSTDIR\config\system\Registry.wsc"
+Delete: "$INSTDIR\config\system\SyntaxAnalysis.wsc"
+Delete: "$INSTDIR\config\system\DynWin9x\dynwrap.dll"
+Delete: "$INSTDIR\config\system\DynWin9x\readme.txt"
+RMDir: "$INSTDIR\config\system\DynWin9x"
+Delete: "$INSTDIR\config\docs\System.readme.txt"
+!insertmacro: OC_DEL_DOCFILE_FROM_STARTMENU
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация\Компоненты - Описание.lnk"
+!insertmacro: end of OC_DEL_DOCFILE_FROM_STARTMENU
+RMDir: "$INSTDIR\config\system"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление компонентов | Готово"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+!include: closed: "system.auto.nsh"
+!include: closed: "system.nsh"
+Section: "Uninstall"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление OpenConf..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+GetDLLVersion: $INSTDIR\config.dll->$R0,$R1
+IntOp: $R2=$R0/0x00010000
+IntOp: $R3=$R0&0x0000FFFF
+IntOp: $R4=$R1/0x00010000
+IntOp: $R5=$R1&0x0000FFFF
+IntCmpU $R2:7 equal=delete_files, < 0, > delete_files
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление OpenConf | Удаление файлов..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\config.dll"
+Delete: "$INSTDIR\config.tlb"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление OpenConf | Перемещение config.dll..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+CopyFiles: "$INSTDIR\config\config.dll" -> "$INSTDIR", size=0KB
+Delete: "$INSTDIR\config\config.dll"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление OpenConf | Удаление файлов..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$INSTDIR\OpenConf.chm"
+Delete: "$INSTDIR\config\docs\OpenConf.history.txt"
+Delete: "$INSTDIR\config\docs\readme.txt"
+Delete: "$INSTDIR\config\docs\OpenConf.lnk"
+Delete: "$INSTDIR\config\docs\WhatsNew.txt"
+Delete: "$INSTDIR\config\Uninstall.exe"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление OpenConf | Удаление ярлыков и программной группы..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\История изменений OpenConf.lnk"
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\ReadMe.lnk"
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Справка по OpenConf.lnk"
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Удаление OpenConf.lnk"
+Delete: "$SMPROGRAMS\$STARTMENU_FOLDER\Что нового.lnk"
+RMDir: "$SMPROGRAMS\$STARTMENU_FOLDER\Документация"
+RMDir: "$SMPROGRAMS\$STARTMENU_FOLDER"
+RMDir: "$INSTDIR\config\docs"
+RMDir: "$INSTDIR\config\scripts"
+RMDir: "$INSTDIR\config"
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Удаление OpenConf | Удаление записи в реестре..."
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+DeleteRegKey: HKLM\Software\1C\1Cv7\7.7\OpenConf\Install
+DeleteRegKey: HKLM\Software\1C\1Cv7\7.7\OpenConf
+!insertmacro: OC_STATUS
+SetDetailsPrint: textonly
+DetailPrint: "Готово"
+SetDetailsPrint: listonly
+!insertmacro: end of OC_STATUS
+SectionEnd
+Function: ".onInit"
+!insertmacro: MUI_INSTALLOPTIONS_EXTRACT_AS
+!insertmacro: end of MUI_INSTALLOPTIONS_EXTRACT_AS
+FunctionEnd
+Function: "un.onInit"
+ReadRegStr $INSTDIR HKLM\Software\1C\1Cv7\7.7\OpenConf\Install\
+!insertmacro: MUI_STARTMENU_GETFOLDER
+ReadRegStr $MUI_TEMP1 HKCU\Software\1C\1Cv7\7.7\OpenConf\Start Menu Folder
+StrCmp "$MUI_TEMP1" "" equal=+3, nonequal=
+StrCpy $STARTMENU_FOLDER "$MUI_TEMP1" () ()
+Goto: +2
+StrCpy $STARTMENU_FOLDER "$(^Name)" () ()
+!insertmacro: end of MUI_STARTMENU_GETFOLDER
+FunctionEnd
+LangString: "SEC_DIR_TITLE" 1049 "Выбор каталога установки OpenConf"
+LangString: "SEC_DIR_SUBTITLE" 1049 "Выберите инсталляцию 1С:Предприятия, в которую следует установить OpenConf или укажите каталог установки вручную"
+Function: "MyDirectoryPageEnter"
+Push: $R0
+Push: $R1
+Push: $R2
+Push: $R3
+StrCpy $R0 "" () ()
+StrCpy $R1 "0" () ()
+StrCpy $R2 "" () ()
+StrCpy $R3 "" () ()
+ReadINIStr $R0 [Field 7]:State from $PLUGINSDIR\OpenConf.ini
+StrCmp "$R0" "" equal=0, nonequal=init_page
+EnumRegKey $R0 HKLM\SOFTWARE\1C\1Cv7\7.7\$R1
+IntOp: $R1=$R1+1
+StrCmp "$R0" "Components" equal=read_next_key, nonequal=
+StrCmp "$R0" "OpenConf" equal=read_next_key, nonequal=
+StrCmp "$R0" "" equal=end_loop, nonequal=
+StrCmp "$R2" "" equal=0, nonequal=+4
+StrCpy $R2 "$R0" () ()
+StrCpy $R3 "$R0" () ()
+Goto: +2
+StrCpy $R2 "$R2|$R0" () ()
+Goto: read_next_key
+WriteINIStr: [Field 4] ListItems=$R2 in $PLUGINSDIR\OpenConf.ini
+WriteINIStr: [Field 4] State=$R3 in $PLUGINSDIR\OpenConf.ini
+ReadRegStr $R3 HKLM\SOFTWARE\1C\1Cv7\7.7\$R3\1CPath
+Push: $R3
+Call "GetParent"
+Pop: $R3
+WriteINIStr: [Field 7] State=$R3 in $PLUGINSDIR\OpenConf.ini
+Pop: $R3
+Pop: $R2
+Pop: $R1
+Pop: $R0
+!insertmacro: MUI_HEADER_TEXT
+!insertmacro: end of MUI_HEADER_TEXT
+!insertmacro: MUI_INSTALLOPTIONS_INITDIALOG
+!insertmacro: end of MUI_INSTALLOPTIONS_INITDIALOG
+Pop: $hwnd
+!insertmacro: MUI_INSTALLOPTIONS_SHOW
+!insertmacro: end of MUI_INSTALLOPTIONS_SHOW
+FunctionEnd
+Function: "MyDirectoryPageLeave"
+ReadINIStr $0 [Settings]:State from $PLUGINSDIR\OpenConf.ini
+StrCmp "$0" "0" equal=onValidate, nonequal=
+StrCmp "$0" "1" equal=onRadioButtonClick, nonequal=
+StrCmp "$0" "2" equal=onRadioButtonClick, nonequal=
+StrCmp "$0" "4" equal=onListChange, nonequal=
+StrCmp "$0" "7" equal=onDirRequestChange, nonequal=
+Abort: ""
+Abort: ""
+IntOp: $0=$0-1
+GetDlgItem: output=$1 dialog=$hwnd item=1206
+EnableWindow: handle=$1 enable=$0
+GetDlgItem: output=$1 dialog=$hwnd item=1207
+EnableWindow: handle=$1 enable=$0
+IntOp: $0=1-$0
+GetDlgItem: output=$1 dialog=$hwnd item=1203
+EnableWindow: handle=$1 enable=$0
+StrCmp "$0" "1" equal=0, nonequal=+8
+WriteINIStr: [Field 1] State=1 in $PLUGINSDIR\OpenConf.ini
+WriteINIStr: [Field 2] State= in $PLUGINSDIR\OpenConf.ini
+WriteINIStr: [Field 4] Flags=NOTIFY in $PLUGINSDIR\OpenConf.ini
+WriteINIStr: [Field 7] Flags=DISABLED|NOTIFY in $PLUGINSDIR\OpenConf.ini
+Goto: +6
+WriteINIStr: [Field 1] State= in $PLUGINSDIR\OpenConf.ini
+WriteINIStr: [Field 2] State=1 in $PLUGINSDIR\OpenConf.ini
+WriteINIStr: [Field 4] Flags=DISABLED in $PLUGINSDIR\OpenConf.ini
+WriteINIStr: [Field 7] Flags=NOTIFY in $PLUGINSDIR\OpenConf.ini
+Abort: ""
+Abort: ""
+ReadINIStr $0 [Field 1]:State from $PLUGINSDIR\OpenConf.ini
+StrCmp "$0" "1" equal=0, nonequal=read_reqdir_field
+ReadINIStr $0 [Field 4]:State from $PLUGINSDIR\OpenConf.ini
+ReadRegStr $0 HKLM\SOFTWARE\1C\1Cv7\7.7\$0\1CPath
+Push: $0
+Call "GetParent"
+Pop: $0
+Goto: validate_dir
+ReadINIStr $0 [Field 7]:State from $PLUGINSDIR\OpenConf.ini
+IfFileExists: "$0\1cv7*.exe" ? +3 : 0
+MessageBox: 48: "Указанный каталог не является каталогом установки 1С!"
+Abort: ""
+StrCpy $INSTDIR "$0" () ()
+GetDLLVersion: $0\basic.dll->$R0,$R1
+IntOp: $R2=$R0/0x00010000
+IntOp: $R3=$R0&0x0000FFFF
+IntOp: $R4=$R1/0x00010000
+IntOp: $R5=$R1&0x0000FFFF
+IntCmpU $R2:7 equal=+1, < +3, > +3
+IntCmpU $R3:70 equal=+1, < +2, > +1
+IntCmpU $R5:14 equal=version_ok, < +1, > version_ok
+MessageBox: 48: "Для работы ОпенКонфа требуется 1С 7.7 не ниже 14-го релиза (7.70.014)!"
+Abort: ""
+GetDLLVersion: $0\config.dll->$R0,$R1
+IntOp: $R2=$R0/0x00010000
+IntOp: $R3=$R0&0x0000FFFF
+IntOp: $R4=$R1/0x00010000
+IntOp: $R5=$R1&0x0000FFFF
+GetDLLVersionLocal: ..\config.dll (458822,24)->($0,$1)
+IntOp: $2=$0/0x00010000
+IntOp: $3=$0&0x0000FFFF
+IntOp: $4=$1/0x00010000
+IntOp: $5=$1&0x0000FFFF
+StrCpy $UPDATE "0" () ()
+IntCmpU $R2:7 equal=end, < 0, > end
+IntCmpU $R2:$2 equal=0, < update, > update_warning
+IntCmpU $R3:$3 equal=0, < update, > update_warning
+IntCmpU $R4:$4 equal=0, < update, > update_warning
+IntCmpU $R5:$5 equal=update_warning, < 0, > update_warning
+StrCpy $UPDATE "1" () ()
+Goto: end
+MessageBox: 48: "Обнаружена установка ОпенКонфа такой же или более поздней версии!"
+!insertmacro: UnselectSection
+Push: $0
+SectionGetFlags: 0->$0
+IntOp: $0=$0&0xFFFFFFFE
+SectionSetFlags: 0->$0
+Pop: $0
+!insertmacro: end of UnselectSection
+FunctionEnd
+
+Processed 1 file, writing output:
+Adding plug-ins initializing function... Done!
+Processing pages... Done!
+Removing unused resources... Done!
+Generating language tables... Done!
+Generating uninstaller... Done!
+
+Output: "C:\1Cv77\BIN\config\Install\release\oc1020b20060128.exe"
+Install: 8 pages (512 bytes), 99 sections (3 required) (2376 bytes), 1149 instructions (32172 bytes), 595 strings (17332 bytes), 1 language table (334 bytes).
+Uninstall: 3 pages (192 bytes), 
+108 sections (2592 bytes), 693 instructions (19404 bytes), 531 strings (18470 bytes), 1 language table (250 bytes).
+Datablock optimizer saved 15152 bytes (~0.2%).
+
+Using lzma (compress whole) compression.
+
+EXE header size:               49664 / 35328 bytes
+Install code:                          (53102 bytes)
+Install data:                          (8199863 bytes)
+Uninstall code+data:                   (55112 bytes)
+Compressed data:             2123440 / 8308077 bytes
+CRC (0x737EAD9B):                  4 / 4 bytes
+
+Total size:                  2173108 / 8343409 bytes (26.0%)

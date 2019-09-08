@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="4"
+   name=""
+   committed-date="2005-07-06T14:19:26.937500Z"
+   url="file:///f:/repos/svn/OpenConf/system/ScriptManager/t/Registry"
+   last-author="1"
+   kind="dir"
+   revision="4"/>
+<entry
+   committed-rev="4"
+   name="23 Метод ValueName.js"
+   text-time="2005-07-06T12:19:05.234375Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="39870abe827fe1bfefd02f000d5883a9"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="5"
+   name="04 Свойство CurrentKey и метод OpenKey 1.js"
+   text-time="2005-07-07T07:59:14.453125Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="a0ef3f0ed956d7fb67366a3511f13242"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+<entry
+   committed-rev="4"
+   name="17 Метод SubKeys.Add.js"
+   text-time="2005-07-06T11:27:37.046875Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="0561728c5bf2f3483880a3a34724f9fd"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="5"
+   name="05 Свойство CurrentKey и метод OpenKey 2.js"
+   text-time="2005-07-07T07:41:07.875000Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="f15ed3d3d49df1621f58b7f70d10c69e"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+<entry
+   committed-rev="4"
+   name="06 Свойство CurrentKey и метод OpenKey 3.js"
+   text-time="2005-07-06T09:02:12.609375Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="fd8e24cf78611f5e113ec8a572617bf1"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="5"
+   name="07 Свойство CurrentKey и метод OpenKey 4.js"
+   text-time="2005-07-07T08:15:25.812500Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="113e0dd3cbb4e9cd346a14ade02438b3"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+<entry
+   committed-rev="4"
+   name="20 Метод SubKeys.Del.js"
+   text-time="2005-07-06T11:40:21.265625Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="16766f1f747f017d3e0952704fb74417"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="02 Метод BuildPath 1.js"
+   text-time="2005-07-06T09:22:29.687500Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="4cedfdbbe799fbbd6cdaa8c98a513114"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="11 Метод SubKeys.Count 1.js"
+   text-time="2005-07-06T10:11:32.515625Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="2d14067345e1fd99135fc328d0b8d812"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="28 Метод WriteValue (строка).js"
+   text-time="2005-07-06T13:23:24.890625Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="03d51afbfd03e35fa3a0a814f551f60a"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="25 Метод ReadValue 1.js"
+   text-time="2005-07-06T12:22:54.656250Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="b93f5900ee57f8f602e7f4a10c1ddce0"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="08 Метод KeyExists.js"
+   text-time="2005-07-06T09:39:09.328125Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="11b05316b2d9398cf8a5e642fa51bbe3"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="30 Свойство Values.Item (запись).js"
+   text-time="2005-07-06T13:52:38.218750Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="3a7190e192b9a02359105ac874794a7a"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="00 Создание объекта.js"
+   text-time="2005-07-05T17:12:18.734375Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="273f4023edfa10441fb27ce063714f19"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="26 Метод ReadValue 2 (ошибочные обращения).js"
+   text-time="2005-07-06T12:36:20.953125Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="3cb5e29b637d1cce04b9f7d1203363e2"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="29 Метод WriteValue (REG_DWORD).js"
+   text-time="2005-07-06T13:31:04.265625Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="3887a2690a021dfc8ba31a94f5af207e"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="10 Метод SubKeysCount 2.js"
+   text-time="2005-07-06T10:04:18.296875Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="89754a05358d762585ba4f1d741c0787"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="14 Свойство SubKeys.Item 1.js"
+   text-time="2005-07-06T10:35:33.906250Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="08ce6880a184a5f5ce07ec5a1dd97e17"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="15 Свойство SubKeys.Item 2.js"
+   text-time="2005-07-06T10:36:39.859375Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="f2328bbec4eb42c1b90dd054b6ffed61"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="24 Метод Values.Name.js"
+   text-time="2005-07-06T12:20:37.609375Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="4f4f6a62a106b242a60966b82af86e95"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="09 Метод SubKeysCount 1.js"
+   text-time="2005-07-06T10:03:27.078125Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="6ec0c6ac72220ea1886e3d87669da6fb"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="22 Метод Values.Count.js"
+   text-time="2005-07-06T11:57:19.093750Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="e309e6387d08fb47ee7223b612185fa6"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="16 Метод CreateSubKey.js"
+   text-time="2005-07-06T11:22:15.828125Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="9619b49dee3e34054b9b49ddfa409089"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="19 Метод DeleteSubKey.js"
+   text-time="2005-07-06T11:37:16.421875Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="15584a8b9a92f6e5f89f993b3bca43ac"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="03 Метод BuildPath 2.js"
+   text-time="2005-07-06T09:33:59.500000Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="564b311ec283018ec2803b386f7f0052"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="12 Метод SubKeys.Count 2.js"
+   text-time="2005-07-06T10:10:30.203125Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="6916bd4aacd9bf42f83c483d313c6c30"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="18 Метод KeyName.js"
+   text-time="2005-07-06T11:30:43.359375Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="a634a52caa465808f555ff82b00880b5"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="31 Метод DeleteValue.js"
+   text-time="2005-07-06T14:11:38.421875Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="0d9b4d7eadabe9bfaac1c18995f43f2e"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="01 Свойство RootKey.js"
+   text-time="2005-07-05T18:00:52.109375Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="c58591bee5ab868c6f30fbecd909375c"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="13 Метод SubKeyName.js"
+   text-time="2005-07-06T10:26:06.265625Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="8f3179f7f75f923a9c5b7c752f79ab50"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="27 Свойство Values.Item (чтение).js"
+   text-time="2005-07-06T12:25:41.000000Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="230130d932675b6d73e3d0851f327a53"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="4"
+   name="21 Метод ValuesCount.js"
+   text-time="2005-07-06T13:22:44.359375Z"
+   committed-date="2005-07-06T14:19:26.937500Z"
+   checksum="e0b05ec890e9702bfe00200741798bcf"
+   last-author="1"
+   kind="file"/>
+</wc-entries>

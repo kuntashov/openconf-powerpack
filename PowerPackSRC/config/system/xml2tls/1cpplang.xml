@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<!DOCTYPE Types [
+<!ELEMENT Types (type*)>
+<!ELEMENT type (attribs*,methods*,handlers*)>
+	<!ATTLIST type 
+		name NMTOKEN #REQUIRED
+		alias CDATA #IMPLIED
+		base CDATA #IMPLIED
+		creatable CDATA #IMPLIED
+		components CDATA #IMPLIED
+		abstract CDATA #IMPLIED
+	>
+<!ELEMENT attribs (attrib+)>
+<!ELEMENT attrib (#PCDATA)*>
+	<!ATTLIST attrib
+		name 	CDATA #REQUIRED
+		alias 	CDATA 	#IMPLIED
+		type 	CDATA 	#IMPLIED
+		InExprOnly CDATA 	#IMPLIED
+		components CDATA #IMPLIED
+	>
+<!ELEMENT methods (method+)>
+<!ELEMENT method (#PCDATA|params|return)*>
+	<!ATTLIST method
+		name 	CDATA	#REQUIRED
+		alias 	CDATA 	#IMPLIED
+		components CDATA #IMPLIED
+	>
+<!ELEMENT params (param+)>
+<!ELEMENT param (#PCDATA)>
+	<!ATTLIST param
+		name 	CDATA	#REQUIRED
+		type	CDATA	#IMPLIED
+		default	CDATA	#IMPLIED
+	>
+<!ELEMENT return (#PCDATA)>
+	<!ATTLIST return
+		type	CDATA	#IMPLIED
+		InExprOnly CDATA 	#IMPLIED
+	>
+<!ELEMENT handlers (method+)>
+]>
+<Types>
+	<type name="UserDefinedClass" alias="КОП" abstract="1">
+		<methods>
+			<method name="ПолучитьБазовыйКласс" alias="GetBaseClass">
+				<params>
+					<param name="ИмяБазовогоКласса" type="String" default="">
+						имя класса, объект которого надо получить
+					</param>
+				</params>
+				<return type="UserDefinedClass">
+					объект базового класса для класса наследника
+				</return>
+			</method>
+			<method name="НазначитьБазовыйКласс" alias="AssignBaseClass">
+				позволяет для созданного КОПа назначить динамически базовый класс
+				<params>
+					<param name="ИмяБазовогоКласса" type="String">
+						имя базового класса
+					</param>
+				</params>
+			</method>
+			<method name="ОтправитьСообщениеМодулюХоз" alias="SendMessageOwnMod">
+				Вызывает предопределенную функцию ОбработкаСобытияОтКласса в модуле работающим с объектом КОП
+				<params>
+					<param name="КтоОтправил" type="String">
+						отправитель сообщения
+					</param>
+					<param name="ВидСообщения" type="String">
+						вид отправляемого сообщения
+					</param>
+					<param name="Данные">
+						отправляемые данные любого типа
+					</param>
+				</params>
+				<return>
+					любое значение, которое будет получено после вызова ОтправитьСообщениеМодулюХоз() в модуле КОП
+				</return>
+			</method>
+			<method name="ПолучитьПуть" alias="GetPathName">
+				<return type="FilePath" InExprOnly="1">
+					полный путь и название файла в котором храниться модуль реализации класса
+				</return>
+			</method>
+			<method name="ПолучитьКонтекстОкружения" alias="GetEnvContext">
+				<return type="Context" InExprOnly="1">
+					контекст из которого получил управление модуль КОП
+				</return>
+			</method>
+			<method name="ПолучитьСписокПараметров" alias="GetParamsList">
+				<params>
+					<param name="стрИмяМетода" type="String">
+						Название метода в котором необходимо получить список неявных параметров
+					</param>
+				</params>
+				<return type="ValueList">
+					список со значениями неявных параметров переданных в метод
+				</return>
+			</method>
+			<method name="УстановитьПараметрПоИндексу" alias="SetOnIndexParams">
+				Метод предназначен для получения ссылки значения неявного параметра по его порядковому номеру и установке нового значения по данной ссылке
+				<params>
+					<param name="стрИмяМетода" type="String">
+						Имя метода в ссылки на неявные параметры, которого необходимо получить
+					</param>
+					<param name="чИнд" type="Number">
+						номер неявного параметра ссылку на которого надо получить и заменить
+					</param>
+					<param name="нЗнач">
+						Новое значение
+					</param>
+				</params>
+				<return type="0;1">
+					1-установка успешно произведена, 0-произошла ошибка при установке
+				</return>
+			</method>
+			<method name="ЗаменитьЭксзБазовогоКласса" alias="ReplaceInstBaseClasses">
+				Предназначен для замены экземпляра базового класса в уже созданной иерархии классов
+				<params>
+					<param name="стрИмяКласса" type="String">
+						Имя базового класса экземпляр которого мы собираемся заменять
+					</param>
+					<param name="нЗначениеКласса">
+						новый экземпляр базового класса
+					</param>
+				</params>
+				<return type="0;1">
+					1-замена успешно произведена, 0-произошла ошибка при замене
+				</return>
+			</method>
+			<method name="_ПриОткрытии" alias="_OnOpen">
+				Данный метод используется только в целях подключения отладчика для отладки классов 1С++
+			</method>
+			<method name="_ВыброситьИскл" alias="_Throw">
+				Формирует исключение с объектом исключением
+				<params>
+					<param name="ОбъектИскл">
+						Любой объект 1С
+					</param>
+				</params>
+			</method>
+		</methods>
+	</type>
+	<type name="WorkAsRegisterWin" alias="РаботаСРегистромWin" creatable="WorkAsRegisterWin,РаботаСРегистромWin">
+		<methods>
+			<method name="СоздатьКлюч" alias="CreateKey">
+				<params>
+					<param name="Ключ" type="String">
+						строка с названием ветви реестра: HKEY_CLASSES_ROOT | HKEY_CURRENT_CONFIG | HKEY_CURRENT_USER | HKEY_LOCAL_MACHINE | HKEY_USERS
+					</param>
+					<param name="Имя" type="String">
+						строка с названием ключа реестра
+					</param>
+					<param name="Режим" type="String">
+						строка с режимом создания ключа
+					</param>
+				</params>
+				<return type="-1;0;1">
+					-1-ошибка, 0-ключ с таким название уже существует и будет просто открыт, 1-ключ успешно создан
+				</return>
+			</method>
+			<method name="ОкрытьКлюч" alias="OpenKey">
+				<params>
+					<param name="Ключ" type="String">
+						строка с названием ветви реестра: HKEY_CLASSES_ROOT | HKEY_CURRENT_CONFIG | HKEY_CURRENT_USER | HKEY_LOCAL_MACHINE | HKEY_USERS
+					</param>
+					<param name="Имя" type="String">
+						строка с названием ключа реестра
+					</param>
+					<param name="Режим" type="String">
+						строка с режимом создания ключа_SET_VALUE, and KEY_CREATE_SUB_KEY access rights.
+					</param>
+				</params>
+				<return type="0;1">
+					0-ошибка, 1-ключ открыт
+				</return>
+			</method>
+			<method name="ПодключитьРегистр" alias="ConnectRegistry">
+				используется для подключения к реестру удаленного компьютера
+				<params>
+					<param name="ИмяУдаленногоКомпьютера" type="String">
+						сетевое имя компьютера к реестру которого необходимо подключиться
+					</param>
+					<param name="Ключ" type="String">
+						строка с названием ветви реестра: HKEY_LOCAL_MACHINE | HKEY_USERS
+					</param>
+				</params>
+				<return type="0;1">
+					0-ошибка, 1-соединение установлено
+				</return>
+			</method>
+			<method name="УдалитьКлюч" alias="DeleteKey">
+				Удаляет подключ открытого ранее ключа
+				<params>
+					<param name="ИмяПодКлюча" type="String">
+						имя подключа
+					</param>
+				</params>
+				<return type="0;1">
+					0-ошибка, 1-успех
+				</return>
+			</method>
+			<method name="УдалитьЗначение" alias="DeleteValue">
+				Удаляет значение открытого ранее ключа
+				<params>
+					<param name="ИмяЗначения" type="String">
+						имя значения
+					</param>
+				</params>
+				<return type="0;1">
+					0-ошибка, 1-успех
+				</return>
+			</method>
+			<method name="УстановитьЗначение" alias="SetValue">
+				Устанавливает значение указанное в параметре NameValue
+				<params>
+					<param name="ИмяЗначения" type="String">
+						название значения в ключе
+					</param>
+					<param name="ТипЗначения" type="String">
+						&quot;REG_SZ&quot; - тип значения строка, &quot;REG_DWORD&quot; - тип значения целое число
+					</param>
+					<param name="Значение" type="Number,String">
+						значение которое необходимо установить
+					</param>
+				</params>
+				<return type="0;1">
+					0-ошибка, 1-успех
+				</return>
+			</method>
+			<method name="ЗапроситьЗначение" alias="QueryValue">
+				Запросить значение указанное в параметре NameValue, открытого  ранее ключа
+				<params>
+					<param name="ИмяЗначения" type="String">
+						название значения в ключе
+					</param>
+					<param name="Значение" type="VarName">
+						полученное значение
+					</param>
+				</params>
+				<return type="0;1">
+					0-ошибка, 1-успех
+				</return>
+			</method>
+			<method name="ВыбратьКлючи" alias="ChooseKeys">
+				Открывает выборку подключей открытого ключа
+				<return type="Number">
+					количество подключей в выборке
+				</return>
+			</method>
+			<method name="ПолучитьКлюч" alias="GetKey">
+				<params>
+					<param name="ИмяПодКлюча" type="VarName">
+						строка в которой возвращается название подключа полученного из выборки
+					</param>
+				</params>
+				<return type="0;1">
+					0-выборка пуста, 1-в выборке еще есть подключи
+				</return>
+			</method>
+			<method name="ВыбратьЗначения" alias="ChooseValues">
+				Открывает выборку значений открытого ключа
+				<return type="Number">
+					количество значений в выборке
+				</return>
+			</method>
+			<method name="ПолучитьЗначение" alias="GetValue">
+				<params>
+					<param name="ИмяЗначения" type="VarName">
+						строка в которой возвращается название значения полученного из выборки
+					</param>
+				</params>
+				<return type="0;1">
+					0-выборка пуста, 1-в выборке еще есть значения
+				</return>
+			</method>
+			<method name="ОтладочныеСообщения" alias="EnableDebug">
+				Включает/отключает отладочные сообщения при возникновения ошибок работы с реестром
+				<params>
+					<param name="Включить" type="0;1">
+						1-включить, 0-отключить
+					</param>
+				</params>
+			</method>
+			<method name="ЗаписатьВсеАтрибуты" alias="Flash">
+				Немедленно записать изменения внесенные ранее в реестр
+			</method>
+		</methods>
+	</type>
+</Types>

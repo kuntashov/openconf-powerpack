@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!-- 
+
+ Copyright (c) 2004 Alexander Kuntashov <kuntashov@yandex.ru>
+
+    Допускается свободное использование и модификация исходного
+    кода. Буду очень признателен, если при этом настоящий комментарий
+    будет сохранен.
+    
+-->
+<package>
+<component>
+<?component error="true" debug="true"?>
+
+    <comment><![CDATA[
+Компонент, реализующий алгоритм парсинга исходного кода Stream'a
+    ]]></comment>
+
+<registration
+    description="StreamParser component for OpenConf"
+    progid="OpenConf.StreamParser"
+    version="1.00"
+    classid="{72cb9a4f-caa6-4688-a390-43735e20b82f}"
+/>
+
+<public>
+    <property name="Stream">
+        <get/>
+        <comment><![CDATA[
+Ссылка на корень дерева разбора, построенного в результате парсинга 
+исходного кода Stream'а
+        ]]></comment>
+    </property>
+    <property name="LastError">
+        <get/>
+        <comment><![CDATA[
+Хранит сообщение об ошибке, возникшей в результате парсинга
+        ]]></comment>
+    </property>
+    <property name="Source">
+        <get/>
+        <put/>
+        <comment><![CDATA[
+Исходный код Stream'а
+        ]]></comment>
+    </property>
+    <method name="Parse">
+        <comment><![CDATA[
+Выполняет парсинг исходного кода Stream'a
+        ]]></comment>
+    </method>
+</public>
+
+<script language="JScript"><![CDATA[
+
+var StreamData; 
+var Source;     
+var LastError;  
+
+var description = new StreamParser();
+
+function StreamParser()
+{
+    StreamData = new ActiveXObject("OpenConf.StreamItem");
+    StreamData.Data = new ActiveXObject("OpenConf.Collection");
+
+    this.get_Stream = get_Stream;
+    this.put_Source = put_Source;
+    this.get_Source = get_Source;
+    this.Parse = Parse;
+    this.get_LastError = get_LastError;
+}
+
+function get_LastError()
+{
+    return LastError;
+}
+
+function get_Stream()
+{
+    return StreamData;
+}
+
+function get_Source()
+{
+    return Source;
+}
+
+function put_Source(src)
+{
+    Source = src;
+}
+
+function Parse()
+{      
+    if (Parse.arguments.length > 0) {
+        Source = arguments[1];
+    }
+    
+    if (!Source) {
+        LastError = "Source not specifyed";
+        return false;
+    }  
+
+    try {
+        var s = new Stream();
+        s.read(Source);
+        StreamData = s.toStreamItem();
+    }
+    catch (e) {
+        LastError = e;
+        return false;
+    }
+
+    LastError = '';
+    return true;
+}
+
+//=============================================================================
+
+function createStreamItem(data)
+{
+    var si = new ActiveXObject("OpenConf.StreamItem");
+    if (data) {
+        si.Data = data;
+    }
+    return si;
+}
+
+function createCollection()
+{
+    return new ActiveXObject("OpenConf.Collection");
+}
+
+function createItemsCollection()
+{
+    var si = createStreamItem();
+    si.Data = createCollection();
+    return si;
+}
+
+function createStreamStringItem(str)
+{
+    var si = createStreamItem();
+    si.Data = str;
+    return si;
+}
+
+//=============================================================================
+
+function StringData()
+{
+    this.src = null;
+    this.data = '';
+}
+
+StringData.prototype.toString = function ()
+{
+    return this.data.toString();
+}
+
+StringData.prototype.assignIndex = function (index)
+{
+    return ((this.src)&&(-1 < index)&&(index < this.src.length));    
+}
+
+StringData.prototype.charAt = function (index)
+{  
+    if (this.assignIndex(index)) {
+        return this.src.charAt(index);
+    }
+    return undefined;
+}
+
+StringData.prototype.toStreamItem = function ()
+{
+    return createStreamStringItem(this.data);
+}
+
+StringData.prototype.read = function (rawData)
+{
+    var index = 0;
+    this.src = rawData;
+    this.data = '';
+
+    if (this.charAt(index++) == '"') {
+        while (ch = this.charAt(index)) {
+            if (ch == '"') {
+                index++;
+                if (this.charAt(index) == '"') {
+                    this.data += '"';
+                    index++;
+                } else {
+                    this.src = this.src.substr(0, index);
+                    return (index);
+                }
+            } 
+            else {
+                this.data += ch;
+                index++;    
+            }
+        }
+    }
+    else {
+        throw("StringData::read(): Syntax error (" + index + ")!");
+    }
+    throw("StringData::read(): Unexpected end of input data!");
+}
+
+function Stream() 
+{
+    this.src = null;
+    
+    // private
+    var items = new Array();
+    
+    // public 
+    this.item = function (index, newValue) {                  
+        if ((-1 < index)&&(index < items.length)) {
+            var ret = items[index];
+            if ((newValue !== undefined)) {
+                items[index] = newValue;
+            }            
+            return ret;
+        }
+        return undefined;
+    }
+
+    this.pushItem = function (item) {        
+        return (items[items.length] = item);
+    }
+
+    this.length = function () {
+        return items.length;
+    }
+
+    this.clearItems = function () {
+        items = new Array();
+    }
+}
+
+Stream.prototype.toStreamItem = function ()
+{
+    var ic = createCollection();
+    for (var i = 0; i < this.length(); i++) {
+        ic.Add(this.item(i).toStreamItem());
+    }
+    return createStreamItem(ic);
+}
+
+Stream.prototype.assignIndex = function (index)
+{
+    return ((this.src)&&(-1 < index)&&(index < this.src.length));    
+}
+
+Stream.prototype.charAt = function (index)
+{  
+    if (this.assignIndex(index)) {
+        return this.src.charAt(index);
+    }
+    return undefined;
+}
+
+Stream.prototype.skipSpaces = function (index)
+{        
+    var count = 0;
+    while (this.assignIndex(index)) {
+        if (!(this.src.charAt(index++).match(new RegExp("\\s")))) {
+            break;
+        }        
+        count++;
+    } 
+    return count;
+}
+
+Stream.prototype.read = function (rawData, ignoreTail)
+{ 
+    var index = 0;    
+    this.src = rawData;
+    this.clearItems();
+
+    index += this.skipSpaces(index);
+    
+    if (this.charAt(index) == '{') {
+        index++;        
+        index = this.parse(index);
+        if (!ignoreTail) {                  
+            index += this.skipSpaces(index);   
+            if (index !== this.src.length) {
+                throw("Stream::read(): Syntax error (" + index + ")!");
+            }
+        }
+        this.src = this.src.substr(0, index);
+        return (index);
+    } 
+    else {    
+        throw("Stream::read(): Unexpected char '" 
+                + this.charAt(index) + "' (" + index + ")!");
+    }   
+}
+
+Stream.prototype.parse = function (index)
+{
+    var ch, item;
+
+    while (ch = this.charAt(index)) {        
+        switch (ch) {
+            case '"':
+                item = this.pushItem(new StringData());                
+                index += item.read(this.src.substr(index));                                
+                break;
+            case '{':
+                item = this.pushItem(new Stream());
+                index += item.read(this.src.substr(index), true);                
+                break;                
+            case '}':
+                return (index+1);
+            case ',':
+                index++;
+            default:                
+                index += this.skipSpaces(index);            
+                ch = this.charAt(index);
+                if (ch === undefined) {
+                    throw("Stream::parse(): Unexpexted end of input data!");
+                } 
+                else if ((ch != '{')&&(ch != '"')) {
+                    throw("Stream::parse(): Unexpexted char '" 
+                        + this.charAt(index) + "' (" + index + ")!" + ch);                                        
+                }
+                break;                
+        }
+    }
+    throw("Stream::parse(): Unexpexted end of input data!");
+}
+
+
+//=============================================================================
+
+]]></script>
+</component>
+</package>

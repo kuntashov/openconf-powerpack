@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<!--
+    Copyright (c) 2005 OpenConf Community <http://openconf.itland.ru>
+
+    $Id: $
+
+    Авторы:  
+        Александр Кунташов aka a13x <kuntashov@yandex.ru> icq#338758861  
+-->
+<package>
+<component>
+<?component error="true" debug="true"?>
+
+<registration
+    description="KeyMap component for ScriptManager"
+    progid="ScriptManager.KeyMap"
+    version="1.00"
+    classid="{252874B1-AAB9-4065-AB2A-782F9B5F9D08}">
+</registration>
+
+<public>
+
+    <property name="LastError">
+        <get />
+    </property>
+
+    <method name="Parse">
+        <parameter name="str" />
+    </method>
+    <method name="Stringify" />
+    
+    <method name="LoadFromFile">
+        <parameter name="path" />
+    </method>
+    <method name="SaveToFile">
+        <parameter name="path" />
+    </method>
+
+    <property name="HotKeyInfo">
+        <get />
+        <put />
+    </property>
+
+    <property name="VK">
+        <get />
+    </property>
+
+    <property name="KV">
+        <get />
+    </property>
+
+    <method name="Keys"/>
+
+    <method name="toCode" />
+    <method name="fromCode" />
+
+    <method name="toShortCut" />
+    <method name="fromShortCut" />
+
+</public>
+
+<script language="JScript">
+<![CDATA[
+
+var description = new KeyMap;
+var hk = {}
+var LastError = null;
+
+var VK = {  
+    'F1'    : 0x70,
+    'F2'    : 0x71,
+    'F3'    : 0x72,
+    'F4'    : 0x73,
+    'F5'    : 0x74,
+    'F6'    : 0x75,
+    'F7'    : 0x76,
+    'F8'    : 0x77,
+    'F9'    : 0x78,
+    'F10'   : 0x79,
+    'F11'   : 0x7A,
+    'F12'   : 0x7B,
+
+    'Tab'   : 0x09,
+    '"'     : 0xde,
+
+    'PageUp'    : 0x21,
+    'PageDown'  : 0x22,
+    'End'       : 0x23,
+    'Home'      : 0x24,
+    'Left'      : 0x25,
+    'Up'        : 0x26,
+    'Right'     : 0x27,
+    'Down'      : 0x28,
+
+    'Num0'  : 0x60,
+    'Num1'  : 0x61,
+    'Num2'  : 0x62,
+    'Num3'  : 0x63,
+    'Num4'  : 0x64,
+    'Num5'  : 0x65,
+    'Num6'  : 0x66,
+    'Num7'  : 0x67,
+    'Num8'  : 0x68,
+    'Num9'  : 0x69,
+    'Num*'  : 0x6A,
+    'Num+'  : 0x6B,
+    'Num-'  : 0x6D,
+    'Num.'  : 0x6E,
+    'Num/'  : 0x6F
+}
+
+var KV = {}; for (var i in VK) { KV['0x' + VK[i].toString(16)] = i }
+    
+function KeyMap()
+{
+    this.get_LastError = get_LastError;
+    this.ClearErrors = ClearErrors;
+
+    this.Parse = Parse;
+    this.Stringify = Stringify;
+
+    this.LoadFromFile = LoadFromFile;
+    this.SaveToFile = SaveToFile;
+
+    this.get_HotKeyInfo = get_HotKeyInfo;
+    this.Keys = Keys;
+
+    this.get_VK = get_VK;
+    this.get_KV = get_KV;
+
+    this.toCode = toCode;
+    this.fromCode = fromCode;
+
+    this.toShortCut = toShortCut;
+    this.fromShortCut = fromShortCut;
+}
+
+function get_LastError()
+{
+    return LastError;
+}
+
+function ClearErrors()
+{
+    LastError = null;
+}
+
+function get_VK()
+{
+    return VK;
+}
+
+function get_KV()
+{
+    return KV;
+}
+
+function fromCode(Code)
+{
+    if ((('A'.charCodeAt(0)<=Code)&&(Code<='Z'.charCodeAt(0))) 
+       ||('0'.charCodeAt(0)<=Code)&&(Code<='9'.charCodeAt(0))) {
+        return String.fromCharCode(Code);
+    }
+    return KV['0x' + Code.toString(16)];
+}
+
+function toCode(Char)
+{
+    if (1==Char.length) {
+        if ((('A'<=Char)&&(Char<='Z')) 
+           ||('0'<=Char)&&(Char<='9')) {
+                return Char.charCodeAt(0);
+        }
+        return undefined;
+    }
+    return VK[Char];
+}
+
+function toShortCut(scan, div, notSafe)
+{
+    var ret = "";
+    var check = function (s,m) { return ((s&m)==m) }
+    if (!div) div = "";
+    if (check(scan, 0x08)) ret += 'Ctrl' + div;
+    if (check(scan, 0x10)) ret += 'Alt'  + div;
+    if (check(scan, 0x04)) ret += 'Shift'+ div;
+    var keyCode = scan >> 16;
+    var mnemo = fromCode(keyCode);
+    if (!notSafe && !(new RegExp(/^\w+$/)).test(mnemo)) {
+        mnemo = '0x' + keyCode.toString(16);
+    }
+    ret += mnemo;
+    return ret;
+}
+
+function fromShortCut(sc)
+{
+    //                   1          2          3          4
+    var m = sc.match(/^(Ctrl){0,1}(Alt){0,1}(Shift){0,1}(\w+)$/)    
+    if (!m) return undefined;
+    var cas = 0;
+    if (m[1]) cas |= 0x08;
+    if (m[2]) cas |= 0x10;
+    if (m[3]) cas |= 0x04;
+    var keyCode = toCode(m[4]);
+    if (!keyCode) {
+        keyCode = parseInt(m[4], 16);
+    }
+    return ( (keyCode<<16)|cas );
+}
+
+function Parse(str)
+{
+    try {   
+        eval(str);  
+        return true;
+    }
+    catch (e) {
+        LastError = e;
+        return false;
+    }
+}
+
+function Stringify()
+{
+    var CrLf = "\r\n", Tab = "\t";
+    var str = '//keymap file, version=1.0' + CrLf;
+    for (var key in hk) {
+        var hki = hk[key];
+        str += 'hk.' + key + ' = new Array(9)' + CrLf;
+        for(var i=0; i<hki.length; i++) {
+            if (hki[i]) {
+                str += 'hk.' + key + '[' + i + '] = {' + CrLf;
+                var div = Tab;
+                for(var a in hki[i]) {
+                    str += div + '"' + a + '" : ' + '"' + hki[i][a] + '"';
+                    div = ',' + CrLf + Tab;
+                }
+                str += CrLf + '}' + CrLf;
+            }
+        }
+    }
+    return str;
+}
+
+function LoadFromFile(path)
+{
+    var fso = new ActiveXObject("Scripting.FileSystemObject");
+    if (!fso.FileExists(path)) {
+        LastError = new Error(0, "Файл не существует: " + path)
+        return false;
+    }
+    try {
+        return Parse(fso.OpenTextFile(path).ReadAll())
+    }
+    catch (e) {
+        LastError = e;
+        return false;
+    }
+}
+
+function SaveToFile(path)
+{
+    var fso = new ActiveXObject("Scripting.FileSystemObject");
+    try {
+        var file = fso.CreateTextFile(path, true);
+        file.WriteLine(Stringify());
+        file.Close();
+        return true;
+    }
+    catch (e) {
+        LastError = e;
+        return false;
+    }
+}
+    
+function get_HotKeyInfo(shortCut, context)
+{
+    if (shortCut) {
+        if (hk[shortCut]) {
+            if (context!==undefined) {
+                if ((!isNaN(context))&&(-1<context)&&(context<hk[shortCut].length)) {
+                    return hk[shortCut][context];
+                }
+            }
+            else {
+                return hk[shortCut]
+            }
+        }
+    }
+    return null;    
+}
+
+function put_HotKeyInfo(shortCut, info)
+{
+    hk[shortCut] = info;
+}
+
+function Keys() 
+{
+    var keys = [];
+    for (var key in hk) {
+        keys[keys.length] = key;
+    }
+    return keys;
+}
+
+]]>
+</script>
+
+</component>
+
+<component>
+<?component error="true" debug="true"?>
+
+<registration
+    description="KeyMapsContainer component for ScriptManager"
+    progid="ScriptManager.KeyMapsContainer"
+    version="1.00"
+    classid="{FF2F8BDF-CAF6-46E6-9D5E-F73C6D7CF181}">
+</registration>
+
+<object id="ocKM" progid="OpenConf.RegistryKeyMap" />
+<object id="smKM" progid="ScriptManager.KeyMap" />
+
+<public>
+
+    <property name="LastError">
+        <get />
+    </property>
+
+    <property name="rPath">
+        <get />
+        <put />
+    </property>
+    <property name="fPath">
+        <get />
+        <put />
+    </property>
+
+    <property name="ocKM">
+        <get />
+    </property>
+    <property name="smKM">
+        <get />
+    </property>
+
+    <method name="IsOk">
+        <parameter name="ShortCut" />
+    </method>
+
+    <method name="SyncInfo">
+        <paramater name="ShortCut" />
+    </method>
+
+    <property name="HotKeyInfo">
+        <get />
+        <put />
+    </property>
+
+    <method name="Load" />
+    <method name="Save" />
+
+</public>
+
+<script language="JScript">
+<![CDATA[
+
+var LastError = null;
+var fPath = "default.keymap.js";
+
+var description = new KeyMapsContainer();
+
+function KeyMapsContainer()
+{
+    this.get_rPath = get_rPath;
+    this.put_rPath = put_rPath;
+    this.get_fPath = get_fPath;
+    this.put_fPath = put_fPath;
+
+    this.get_ocKM = get_ocKM;
+    this.get_smKM = get_smKM;
+
+    this.get_LastError = get_LastError;
+
+    this.Save = Save;
+    this.Load = Load;
+
+    this.get_HotKeyInfo = get_HotKeyInfo;
+    this.put_HotKeyInfo = put_HotKeyInfo;
+    
+    this.IsOk = IsOk;
+    this.SyncInfo = SyncInfo;
+}
+
+function get_ocKM()
+{
+    return ocKM;
+}
+
+function get_smKM()
+{
+    return smKM;
+}
+
+function get_rPath()
+{
+    debugger
+    return ocKM.RootKey;
+}
+
+function put_rPath(newValue)
+{
+    ocKM.RootKey = newValue;
+}
+
+function get_fPath()
+{
+    return fPath;
+}
+
+function put_fPath(newValue)
+{
+    fPath = newValue;
+}
+
+function get_LastError()
+{
+    return LastError;
+}
+
+function Save()
+{ 
+    try {
+        ocKM.Save();
+    }
+    catch (e) {
+        LastError = e;
+        return false;
+    }
+    if (!smKM.SaveToFile(fPath)) {
+        LastError = smKM.LastError;
+        return false;
+    }
+    return true;
+}
+
+function Load()
+{
+    try {
+        ocKM.Load();
+    }
+    catch (e) {
+        LastError = e;
+        return false;
+    }
+    if (!smKM.LoadFromFile(fPath)) {
+        LastError = smKM.LastError;
+        return false;
+    }
+    return true;
+}
+
+function get_HotKeyInfo(ShortCut)
+{
+    return smKM.HotKeyInfo(ShortCut);
+}
+
+function put_HotKeyInfo(ShortCut, Info)
+{
+    smKM.HotKeyInfo(ShortCut) = Info;
+    SyncInfo(ShortCut, true);
+}
+
+function SyncInfo(ShortCut, forceSMInfo)
+{
+    var ocInfo = ocKM.HotKeyInfo(smKM.fromShortCut(ShortCut));
+    var smInfo = smKM.HotKeyInfo(ShortCut);
+    if (!(ocInfo || smInfo)) {
+        return;
+    }
+    // 1. не назначен макрос в реестре
+    if (!ocInfo && smInfo) {
+        ocKM.Add(smKM.fromShortCut(ShortCut), true, "HotKeysHandler", ShortCut);
+        //ocInfo = ocKM.HotKeyInfo(smInfo.fromShortCut(ShortCut));
+        return;
+    }
+    // 2. принудительно изменить информацию в реестре, независимо
+    // от того, какой там был установлен макрос до этого 
+    if (smInfo && forceSMInfo) {
+        ocInfo.Modul = "HotKeysHandler";
+        ocInfo.Macros = ShortCut;
+        ocInfo.IsScript = true;
+        return;
+    }
+    // 3. если хоткей навешен на макрос непосредственно
+    // средствами ОпенКонфа, то уберем информацию о хоткеях из 
+    // кеймапа менеджера скриптов
+    if (ocInfo.Modul != "HotKeysHandler") {
+        // удалим информацию о хоткеях
+        smKM.HotKeyInfo(ShortCut) = undefined;
+        return;
+    }
+    // 4. если в кеймапе никаких макросов к шорткату не прикреплено,
+    // то избавимся и от записи в реестре
+    if (!smInfo) {
+        ocKM.Del(smKM.fromShortCut(ShortCut));
+    }
+}
+
+function IsOk(ShortCut)
+{
+    var ocInfo = ocKM.HotKeyInfo(smInfo.fromShortCut(ShortCut));
+    var smInfo = smKM.HotKeyInfo(ShortCut);
+    if (!(ocInfo && smInfo)) {
+        // по крайней мере в одном из кеймапов 
+        // шорткат отсутствует -> конфликта быть не может
+        return true;
+    }
+    if (ocInfo.Modul != "HotKeysHandler") {
+        // явный конфликт
+        return false;
+    }
+    if (ocInfo.Macros != ShortCut) {
+        // такая ситуация в принципе возможна
+        // конфликт
+        return false;
+    }
+    return true;
+}
+
+
+]]>
+</script>
+
+</component>
+
+</package>

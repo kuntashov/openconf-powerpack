@@ -1,0 +1,1 @@
+cscript.exe //nologo ./genPropsImpl.js > props.txt

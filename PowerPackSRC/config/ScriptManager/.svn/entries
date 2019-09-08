@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="4"
+   name=""
+   committed-date="2005-07-06T14:19:26.937500Z"
+   url="file:///f:/repos/svn/OpenConf/system/ScriptManager"
+   last-author="1"
+   kind="dir"
+   uuid="81155499-493a-134a-98ce-c939cf27e194"
+   revision="4"/>
+<entry
+   committed-rev="1"
+   name="Folders.lst"
+   text-time="2005-07-04T09:50:34.015625Z"
+   committed-date="2005-07-04T09:48:02.546875Z"
+   checksum="85259c67e8d14f5b490ba9c7f38f1ae3"
+   last-author="1"
+   kind="file"
+   prop-time="2005-07-04T09:50:33.984375Z"/>
+<entry
+   committed-rev="3"
+   name="HotKeysHandler.js"
+   text-time="2005-07-04T15:09:59.125000Z"
+   committed-date="2005-07-06T14:15:49.062500Z"
+   checksum="7c90151d8f4c23cd1776468330b39b9e"
+   last-author="1"
+   kind="file"
+   prop-time="2005-07-04T09:50:34.109375Z"/>
+<entry
+   committed-rev="1"
+   name="loader.js"
+   text-time="2005-07-04T09:50:34.250000Z"
+   committed-date="2005-07-04T09:48:02.546875Z"
+   checksum="0a480f037abb09ff592efd847ecc92c8"
+   last-author="1"
+   kind="file"
+   prop-time="2005-07-04T09:50:34.218750Z"/>
+<entry
+   name="t"
+   kind="dir"/>
+<entry
+   committed-rev="5"
+   name="Registry.wsc"
+   text-time="2005-07-07T08:26:20.375000Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="85cdad1c652b7979406fc0a49ee46859"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+<entry
+   committed-rev="1"
+   name="default.keymap.js"
+   text-time="2005-07-04T09:50:34.609375Z"
+   committed-date="2005-07-04T09:48:02.546875Z"
+   checksum="e1852316a6541cb6b33a2e03bf458051"
+   last-author="1"
+   kind="file"
+   prop-time="2005-07-04T09:50:34.562500Z"/>
+<entry
+   committed-rev="3"
+   name="ScriptManager.wsc"
+   text-time="2005-07-04T10:09:27.375000Z"
+   committed-date="2005-07-06T14:15:49.062500Z"
+   checksum="384da11b3719659622d75f75db468ce5"
+   last-author="1"
+   kind="file"
+   prop-time="2005-07-04T09:50:34.687500Z"/>
+<entry
+   committed-rev="5"
+   name="RegistryKeyMap.wsc"
+   text-time="2005-07-07T08:20:49.203125Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="880eda84067021698e01a2ed2a665b4d"
+   last-author="1"
+   kind="file"
+   revision="5"/>
+<entry
+   committed-rev="1"
+   name="ScriptManager.txt"
+   text-time="2005-07-04T09:50:34.843750Z"
+   committed-date="2005-07-04T09:48:02.546875Z"
+   checksum="f8ebc5950dab043bd1327b4092d1bd46"
+   last-author="1"
+   kind="file"
+   prop-time="2005-07-04T09:50:34.812500Z"/>
+</wc-entries>

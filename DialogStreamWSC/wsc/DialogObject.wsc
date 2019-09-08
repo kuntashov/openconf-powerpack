@@ -1,0 +1,1089 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!-- 
+
+ Copyright (c) 2004 Alexander Kuntashov <kuntashov@yandex.ru>
+
+    Допускается свободное использование и модификация исходного
+    кода. Буду очень признателен, если при этом настоящий комментарий
+    будет сохранен.
+    
+-->
+<package>
+<component>
+<?component error="true" debug="true"?>
+
+    <comment><![CDATA[
+    Компонент, реализующий объектное представление формы и элементов 
+управления диалога. Позволяет легко программно добавлять элементы
+управления на форму диалога, изменять параметры формы и элементов
+управления. 
+    ]]></comment>
+
+<registration
+    description="DialogObject"
+    progid="OpenConf.DialogObject"
+    version="1.00"
+    classid="{c5f3f8cb-6a69-40ed-8c34-6f6ba85b08d4}"
+>
+</registration>
+<object id="StreamParser" progid="OpenConf.StreamParser"/>
+<public>
+    <property name="Stream">
+        <get/> 
+        <put/>       
+        <comment><![CDATA[
+Исходный код Dialog'а (DialogStream)
+        ]]></comment>
+    </property>
+    <property name="Frame">
+        <get/>       
+        <comment><![CDATA[
+Форма диалога
+        ]]></comment>
+    </property>
+    <property name="Browser">
+        <get/>     
+        <comment><![CDATA[
+        ]]></comment>
+    </property>
+    <property name="Controls">
+        <get/> 
+        <comment><![CDATA[
+Элементы управления формы
+        ]]></comment>     
+    </property>
+
+    <method name="CreateControl">
+        <parameter name="Type" />        
+        <comment><![CDATA[
+Создает элемент управления
+        ]]></comment>
+    </method>
+
+</public>
+
+<script language="JScript"><![CDATA[
+
+var description = new DialogObject;
+
+var Frame = null;
+var Browser = null; //createComponent("OpenConfDialogBrowser");
+var Controls = null;
+
+function DialogObject()
+{
+    this._stream = null;
+
+    this.get_Stream = get_Stream;
+    this.put_Stream = put_Stream;   
+}
+
+function get_Frame()
+{
+    return Frame;
+}
+
+function get_Stream()
+{
+    return _stream?_stream.Stringify():null;
+}
+
+function get_Browser()
+{
+    return Browser;
+}
+
+function get_Controls()
+{
+    return Controls;
+}
+
+function put_Stream(source)
+{
+    if (source) {
+        StreamParser.Source = source;
+        if (StreamParser.Parse()) {
+            this._stream = StreamParser.Stream;
+            /* ToDo: рефакторить код Frame - как и с остальными объектами
+                надо передавать не сам диалог, а только часть стрима, 
+                соответствующую врапперу, в данном случае Frame */ 
+            Frame = createComponent("OpenConfDialogFrame");
+            Frame.Parent = this;
+            
+            var ctrlsIx = 3;
+            /* Browser может и остутствовать, напримерв формах
+                обработок и отчетов */
+            if (this._stream.Data.Item(2).Data.Item(0).Data =="Browser") {
+                Browser = createComponent("OpenConfDialogBrowser");
+                Browser.Browser = this._stream.Data.Item(2).Data;
+            }
+            else {
+                Browser = null;
+                ctrlsIx = 2;
+            }
+
+            Controls = createComponent("OpenConfDialogControls");
+            Controls.Controls = this._stream.Data.Item(ctrlsIx).Data;            
+        }
+    }    
+}
+
+var defaults = {
+    TABLE    : new Array("","TABLE","1352663040","157","86","39","13","0","0","4152","","","","0","U","0","0","0","0","16777216","","","","0","-11","0","0","0","0","0","0","0","0","0","0","0","0","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}'),
+    EDIT     : new Array("","1CEDIT","1350565888","87","88","39","13","0","0","4153","","","","-1","S","10","0","0","0","0","","","","0","-11","0","0","0","0","0","0","0","0","0","0","0","0","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}'),
+    STATIC   : new Array("Надпись","STATIC","1342177280","15","88","39","13","0","0","4154","","","","0","U","0","0","0","0","192","","","","0","-11","0","0","0","400","0","0","0","204","1","2","1","34","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}'),
+    GROUPBOX : new Array("Рамка группы","1CGROUPBOX","1342177287","202","52","39","13","0","0","4155","","","","0","U","0","0","0","0","0","","","","0","-11","0","0","0","0","0","0","0","0","0","0","0","0","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}'),
+    COMBOBOX : new Array("","COMBOBOX","1352663107","142","50","39","13","0","0","4156","","","","0","U","0","0","0","0","16777216","","","","0","-11","0","0","0","0","0","0","0","0","0","0","0","0","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}'),
+    LISTBOX  : new Array("","LISTBOX","1352663297","77","50","39","13","0","0","4157","","","","0","U","0","0","0","0","16777216","","","","0","-11","0","0","0","0","0","0","0","0","0","0","0","0","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}'),
+    RADIO    : new Array("Переключатель","RADIO","1342177289","16","52","39","13","0","0","4158","","","","0","U","0","0","0","0","0","","","","0","-11","0","0","0","0","0","0","0","0","0","0","0","0","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}'),
+    CHECKBOX : new Array("Флажок","CHECKBOX","1342177283","81","25","39","13","0","0","4159","","","","0","U","0","0","0","0","0","","","","0","-11","0","0","0","0","0","0","0","0","0","0","0","0","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}'),
+    BUTTON   : new Array("Кнопка","BUTTON","1342177291","13","22","39","13","0","0","4160","","","","0","U","0","0","0","0","0","","","","0","-11","0","0","0","0","0","0","0","0","0","0","0","0","MS Sans Serif","-1","-1","0","Основной",'{""0"",""0""}')
+};
+
+function CreateControl(Type)
+{
+    var t, item, ctl, collection;
+
+    switch (Type.toUpperCase()) {
+        case "BUTTON":      case "CHECKBOX": 
+        case "RADIO":       case "LISTBOX": 
+        case "COMBOBOX":    case "STATIC": 
+        case "1CGROUPBOX":  case "GROUPBOX":        
+        case "1CEDIT":      case "EDIT":
+        case "TABLE":
+            t = Type.toUpperCase();
+            break;
+        default:
+            return null;
+    }
+    
+    if (t.substr(0, 2) == "1C") {
+        t = t.substr(2);
+    }
+
+    collection = new ActiveXObject("OpenConf.Collection");
+
+    for (var i=0; i<43; i++) {        
+        item = new ActiveXObject("OpenConf.StreamItem");
+        item.Data = defaults[t][i];
+        collection.Add(item);
+    }
+
+    ctl = createComponent("OpenConfDialogControl");
+    ctl.Control = collection;
+   
+    return ctl; 
+}
+
+]]>
+</script>
+
+</component>
+<component id="OpenConfDialogFrame">
+
+    <comment><![CDATA[
+Рамка диалога
+    ]]></comment>
+
+<public>
+
+    <property name="Parent">           
+        <put/>
+        <comment><![CDATA[
+Родитель
+        ]]></comment>     
+    </property>
+    <property name="Property">
+        <get/>
+        <put/>
+        <comment><![CDATA[
+Свойство Frame'а с номером ix (1&lt;=ix&lt;=30)
+Все примитивные типы даных, в том числе и свойства, хранятся как строки!!!      
+(хотя, для JScript это и не особо важно) то есть,                                                                                         
+    (frm.Frame.Property(0) == 100)
+истинно (т.к. перед сравнением будет выполнено приведение типов), а
+    (frm.Frame.Property(0) === 100)
+вернет false (ложь)
+        ]]></comment>
+    </property>
+
+    <property name="Layer">
+        <get />
+        <comment><![CDATA[
+Слой формы с номером ix. Нумерация слоев производится с 0
+        ]]></comment>     
+    </property>
+    <property name="ActiveLayer">
+        <get/>
+        <put/>
+        <comment><![CDATA[
+Порядковый номер активного слоя формы в списке слоев, начиная с 0
+    ]]></comment>
+    </property>
+
+</public>
+<script language="JScript"><![CDATA[
+
+/*
+{"Dialogs",
+{"Frame",
+    {
+        "Param1", "Param2", .... ,"Param28",
+            {"ActiveLayerNo",
+            {"Layer Id 1", "Visible"},   
+            {"Layer Id 2", "Visible"}, 
+            ...
+            {"Layer Id N", "Visible"}}, 
+        "Param29", "Param30"
+    }
+},
+...
+*/
+
+var Parent; // родитель
+
+var frame = new DialogFrame;
+
+function DialogFrame()
+{   
+    this.put_Parent = put_Parent;
+    this.get_Layer = get_Layer;
+    this.get_ActiveLayer = get_ActiveLayer;
+    this.put_ActiveLayer = put_ActiveLayer;
+
+// XXX надо бы переписать более "языконезависимо" - на случай, 
+//  если кто-либо решит присоединиться к реализации новых методов
+//  на VBScript
+    this._stream = null;
+}
+
+function put_Parent(p)
+{
+    if (p) {
+        Parent = p;
+        this._stream = Parent._stream.Data.Item(1).Data;   
+    }        
+}
+
+function get_Layer(index)
+{
+    var dfl = createComponent("OpenConfDialogFrameLayer");
+    index++;
+    if ((0<index)&&(index<this._stream.Item(1).Data.Item(28).Data.Size())) {
+        dfl.Layer = this._stream.Item(1).Data.Item(28).Data.Item(index).Data;
+        return dfl;        
+    }   
+}
+
+function get_ActiveLayer()
+{
+    return parseInt(_stream.Item(1).Data.Item(28).Data.Item(0).Data);
+}
+
+function put_ActiveLayer(layerNo)
+{
+    if ((0<=layerNo)&&(layerNo<this._stream.Item(1).Data.Item(28).Data.Size()-1)) {
+        this._stream.Item(1).Data.Item(28).Data.Item(0).Data = layerNo;
+    }
+}
+
+function get_Property(index)
+{          
+    index--;
+    with (this._stream.Item(1).Data) {    
+        if ((-1 < index)&&(index < 31)) {                   
+             return Item(index>27?index+1:index).Data;           
+        }
+    }    
+}
+
+function put_Property(index, value)
+{
+    index--;
+    with (this._stream.Item(1).Data) {    
+        if ((-1<index)&&(index<30)) {
+            Item(index>27?index+1:index).Data = value;
+        }
+    }
+}
+
+]]></script>
+</component>
+
+<component id="OpenConfDialogFrameLayer">
+<?component error="true" debug="true"?>
+    
+    <comment><![CDATA[
+Слой 
+    ]]></comment>
+
+<public>    
+    <property name="Name">   
+        <get/>
+        <put/>
+        <comment><![CDATA[
+Идентификатор слоя
+        ]]></comment>     
+    </property>
+    <property name="Visible">
+        <get/>
+        <put/>
+        <comment><![CDATA[
+Видимость слоя
+        ]]></comment>     
+    </property>
+    <property name="Layer">      
+        <put/>
+        <comment><![CDATA[
+Только для внутреннего использования!
+        ]]></comment>     
+    </property>
+</public>
+<script language="JScript"><![CDATA[
+
+/*
+    {"Layer Id", "Visible"}
+*/
+
+var Layer;
+
+function get_Name()
+{
+    if (Layer) {
+        return Layer.Item(0).Data;
+    }
+}
+
+function put_Name(n)
+{
+    if (Layer&&(n!==undefined)) {
+        Layer.Item(0).Data = n;
+    }
+}
+
+function get_Visible()
+{
+    if (Layer) {
+        return ((Layer.Item(1).Data=="1")?true:false);
+    }
+}
+
+function put_Visible(v)
+{
+    if (Layer) {
+        Layer.Item(1).Data = (v?"1":"0");       
+    }
+}
+
+function put_Layer(l)
+{
+    Layer = l;
+}
+
+]]></script>
+</component>
+<component id="OpenConfDialogControls">
+<?component error="true" debug="true"?>
+
+    <comment><![CDATA[
+Коллекция элементов управления
+    ]]></comment>
+
+<public>
+    <property name="Controls">    
+        <put/>
+        <comment><![CDATA[
+Только для внутреннего использования!
+        ]]></comment>
+    </property>
+
+    <property name="Count">
+        <get/>
+        <comment><![CDATA[
+Число элементов управления диалога
+        ]]></comment>
+    </property>
+
+    <property name="Item">
+        <get/>
+        <comment><![CDATA[
+Элемент управления с порядковым номером ix (0&lt;=ix&lt;=Controls.Count)
+        ]]></comment>
+    </property>
+
+    <method name="Add">
+        <parameter name="ctl"/>
+        <comment><![CDATA[
+Добавить элемент управления на форму диалога
+        ]]></comment>
+    </method>
+</public>
+<script language="JScript"><![CDATA[
+
+/*
+{"Controls",
+    { "1й Параметр контрола 1", "2й Параметр контрола 1", ... "43й Параметр контрола  1"},
+    { "1й Параметр контрола 2", "2й Параметр контрола 2", ... "43й Параметр контрола  2"},
+    ...
+    { "1й Параметр контрола 3", "2й Параметр контрола 3", ... "43й Параметр контрола  3"}
+}
+*/
+
+var Controls;
+
+function put_Controls(ctrl)
+{
+    Controls = ctrl;
+}
+
+function get_Count()
+{
+    if (Controls) {
+        return Controls.Size()-1; // "Controls" не считаем
+    } 
+    return 0;   
+}
+
+function get_Item(ix)
+{
+    var ctrl, sz = Controls.Size()-1;
+    if (sz > 0) {
+        if ((-1 < ix)&&(ix < sz)) {
+            ctrl = createComponent("OpenConfDialogControl");
+            ctrl.Control = Controls.Item(ix+1).Data;
+            return ctrl;
+        }
+    }
+    return undefined;
+}
+
+function Add(ctl)
+{   
+    if (ctl) {        
+        Controls.Add(ctl._stream());    
+    }
+}
+
+]]></script>
+</component>
+
+<component id="OpenConfDialogControl">
+<?component error="true" debug="true"?>
+
+    <comment><![CDATA[
+Элемент управления диалога
+    ]]></comment>
+
+<public>
+    <property name="Control">    
+        <put/>        
+        <comment><![CDATA[
+Только для внутреннего использования!
+        ]]></comment>
+    </property>
+
+    <method name="_stream">    
+        <comment><![CDATA[
+Для внутреннего использования
+        ]]></comment>
+    </method>
+
+    <property name="Property">
+        <get/>
+        <put/>
+        <comment><![CDATA[
+Свойство элемента управления с номером ix (1&lt;=ix&lt;=43)
+        ]]></comment>
+    </property>
+
+    <property name="Caption">
+        <get />
+        <put />
+        <comment><![CDATA[
+Заголовок элемента управления
+         ]]></comment>
+    </property>
+
+    <property name="Type">
+        <get />
+        <put />
+        <comment><![CDATA[
+Тип элемента управления
+         ]]></comment>
+    </property>
+
+    <property name="Flags1">
+        <get />
+        <put />
+        <comment><![CDATA[
+Набор дополнительных флагов элемента управления
+         ]]></comment>
+    </property>
+
+    <property name="X">
+        <get />
+        <put />
+        <comment><![CDATA[
+Координата X
+         ]]></comment>
+    </property>
+
+    <property name="Y">
+        <get />
+        <put />
+        <comment><![CDATA[
+Координата Y
+         ]]></comment>
+    </property>
+
+    <property name="Width">
+        <get />
+        <put />
+        <comment><![CDATA[
+Ширина элемента управления
+         ]]></comment>
+    </property>
+
+    <property name="Height">
+        <get />
+        <put />
+        <comment><![CDATA[
+Высота элемента управления
+         ]]></comment>
+    </property>
+
+    <property name="Associated">
+        <get />
+        <put />
+        <comment><![CDATA[
+Признак привязки к реквизиту объекта конфишурации (1-привязан, 2 - нет)
+         ]]></comment>
+    </property>
+
+    <property name="TabOrder">
+        <get />
+        <put />
+        <comment><![CDATA[
+Порядок обхода
+         ]]></comment>
+    </property>
+
+    <property name="Action">
+        <get />
+        <put />
+        <comment><![CDATA[
+Формула
+         ]]></comment>
+    </property>
+
+    <property name="Name">
+        <get />
+        <put />
+        <comment><![CDATA[
+Идентификатор элемента управления
+         ]]></comment>
+    </property>
+
+    <property name="ObjAttribId">
+        <get />
+        <put />
+        <comment><![CDATA[
+Идентификатор реквизита объекта, к которому привязан реквизит
+         ]]></comment>
+    </property>
+
+    <property name="ValueType">
+        <get />
+        <put />
+        <comment><![CDATA[
+Идентификатор типа значения
+         ]]></comment>
+    </property>
+
+    <property name="ValueLength">
+        <get />
+        <put />
+        <comment><![CDATA[
+Длина значения
+         ]]></comment>
+    </property>
+
+    <property name="ValuePrecision">
+        <get />
+        <put />
+        <comment><![CDATA[
+Точность значения
+         ]]></comment>
+    </property>
+
+    <property name="ValueKind">
+        <get />
+        <put />
+        <comment><![CDATA[
+Идентификатор вида значения
+         ]]></comment>
+    </property>
+
+    <property name="ValueFlags">
+        <get />
+        <put />
+        <comment><![CDATA[
+Набор двух флагов - "Не отрицательный" и "Разделять на триады"
+         ]]></comment>
+    </property>
+
+    <property name="Flags2">
+        <get />
+        <put />
+        <comment><![CDATA[
+Основной набор флагов
+         ]]></comment>
+    </property>
+
+    <property name="Description">
+        <get />
+        <put />
+        <comment><![CDATA[
+Пользовательское описание элемента управления
+         ]]></comment>
+    </property>
+
+    <property name="Hint">
+        <get />
+        <put />
+        <comment><![CDATA[
+Подсказка для пользователя
+         ]]></comment>
+    </property>
+
+    <property name="Font">
+        <get />
+        <put />
+        <comment><![CDATA[
+Шрифт элемента управления
+         ]]></comment>
+    </property>
+
+    <property name="PictureId">
+        <get />
+        <put />
+        <comment><![CDATA[
+Идентификатор картинки
+         ]]></comment>
+    </property>
+
+    <property name="Layer">
+        <get />
+        <put />
+        <comment><![CDATA[
+Слой, на котором располагается элемент управления
+         ]]></comment>
+    </property>
+
+    <property name="HotKey">
+        <get />
+        <put />
+        <comment><![CDATA[
+Горячая клавиша, ассоциированная с элементом управления
+         ]]></comment>
+    </property>
+
+</public>
+<script language="JScript"><![CDATA[
+
+/*
+{"Controls",
+    { "1й Параметр контрола 1", "2й Параметр контрола 1", ... "43й Параметр контрола  1"},
+    { "1й Параметр контрола 2", "2й Параметр контрола 2", ... "43й Параметр контрола  2"},
+    ...
+    { "1й Параметр контрола 3", "2й Параметр контрола 3", ... "43й Параметр контрола  3"}
+}
+*/
+
+var Control;
+
+function put_Control(b)
+{
+    Control = b;
+}
+
+function _stream()
+{
+    var s = new ActiveXObject("OpenConf.StreamItem");
+    s.Data = Control;
+    return s;
+}
+
+function get_Property(ix)
+{
+    ix--;    
+    if ((-1<ix)&&(ix<Control.Size())) {
+        return Control.Item(ix).Data;
+    }    
+}
+
+function put_Property(ix, value)
+{
+    ix--;    
+    if ((-1<ix)&&(ix<Control.Size())) {
+        Control.Item(ix).Data = value;
+    }    
+}
+
+function get_Caption()
+{
+    return get_Property(1);
+}
+
+function put_Caption(Caption)
+{
+    put_Property(1, Caption);
+}
+
+function get_Type()
+{
+    return get_Property(2);
+}
+
+function put_Type(Type)
+{
+    put_Property(2, Type);
+}
+
+function get_Flags1()
+{
+    return get_Property(3);
+}
+
+function put_Flags1(Flags1)
+{
+    put_Property(3, Flags1);
+}
+
+function get_X()
+{
+    return get_Property(4);
+}
+
+function put_X(X)
+{
+    put_Property(4, X);
+}
+
+function get_Y()
+{
+    return get_Property(5);
+}
+
+function put_Y(Y)
+{
+    put_Property(5, Y);
+}
+
+function get_Width()
+{
+    return get_Property(6);
+}
+
+function put_Width(Width)
+{   
+    put_Property(6, Width);   
+}
+
+function get_Height()
+{
+    return get_Property(7);
+}
+
+function put_Height(Height)
+{
+    put_Property(7, Height);
+}
+
+function get_Associated()
+{
+    return (get_Property(8) == "1");
+}
+
+function put_Associated(Associated)
+{
+    put_Property(8, Associated?"1":"2");
+}
+
+function get_TabOrder()
+{
+    return get_Property(10);
+}
+
+function put_TabOrder(TabOrder)
+{
+    put_Property(10, TabOrder);
+}
+
+function get_Action()
+{
+    return get_Property(12);
+}
+
+function put_Action(Action)
+{
+    put_Property(12, Action);
+}
+
+function get_Name()
+{
+    return get_Property(13);
+}
+
+function put_Name(Name)
+{
+    put_Property(13, Name);
+}
+
+function get_ObjAttribId()
+{
+    return get_Property(14);
+}
+
+function put_ObjAttribId(ObjAttribId)
+{
+    put_Property(14, ObjAttribId);
+}
+
+function get_ValueType()
+{   
+    return get_Property(15);
+}
+
+function get_ValueTypeString()
+{
+    switch(get_Property(15)) {
+        case 'S': return "Строка";
+        case 'N': return "Число";
+        case 'U': return "Неопределенный";
+        case 'D': return "Дата";
+        case 'B': return "Справочник";
+        case 'O': return "Документ";
+        case 'E': return "Перечисление";
+        case 'T': return "Счет";
+        case 'K': return "ВидСубконто";
+        case 'A': return "ВидРасчета";
+    }
+}
+
+function stringToType(t)
+{    
+    if (ValueType.length == 1) {
+        if (t.match(new RegExp("S|N|U|D|B|O|E|R|K|A", "i"))) {
+            return t.toUpperCase();
+        }                               
+    }
+    else {
+        switch(t.toUpperCase()) {
+            case "СТРОКА"        : return 'S';
+            case "ЧИСЛО"         : return 'N';
+            case "НЕОПРЕДЕЛЕННЫЙ": return 'U';
+            case "ДАТА"          : return 'D';
+            case "СПРАВОЧНИК"    : return 'B';
+            case "ДОКУМЕНТ"      : return 'O';
+            case "ПЕРЕЧИСЛЕНИЕ"  : return 'E';
+            case "СЧЕТ"          : return 'T';
+            case "ВИДСУБКОНТО"   : return 'K';
+            case "ВИДРАСЧЕТА"    : return 'A';
+        }
+    }    
+
+    return 'U';   // !!! может, вызывать исключение "Недопустимое значение" -- a13x ???     
+}
+
+function numberToType(n) 
+{
+    switch (n) {
+        case  2: return 'S';
+        case  1: return 'N';
+        case  0: return 'U';
+        case  3: return 'D';
+        case 11: return 'B';
+        case 12: return 'O';
+        case 10: return 'E';
+        case 15: return 'T';
+        case 16: return 'K';
+        case 14: return 'A';
+    }
+
+    return 'U'; // !!! может, вызывать исключение "Недопустимое значение" -- a13x ???     
+}
+
+function put_ValueType(ValueType)
+{
+    var type = 'U';
+
+    switch (typeof(ValueType)) {
+        case 'string':
+            type = stringToType(ValueType);
+            break;
+
+        case 'number':
+            type = numberToType(ValueType); 
+            break;
+
+        default:
+            // !!! может, вызывать исключение "Недопустимое значение" -- a13x ???     
+    }
+
+    put_Property(15, type);
+}
+
+// ToDo: нужна ли проверка передаваемых значений???
+
+function get_ValueLength()
+{
+    return get_Property(16);
+}
+
+function put_ValueLength(ValueLength)
+{
+    put_Property(16, ValueLength);
+}
+
+function get_ValuePrecision()
+{
+    return get_Property(17);
+}
+
+function put_ValuePrecision(ValuePrecision)
+{
+    put_Property(17, ValuePrecision);
+}
+
+function get_ValueKind()
+{
+    return get_Property(18);
+}
+
+function put_ValueKind(ValueKind)
+{
+    put_Property(18, ValueKind);
+}
+
+function get_ValueFlags()
+{
+    return get_Property(19);
+}
+
+function put_ValueFlags(ValueFlags)
+{
+    put_Property(19, ValueFlags);
+}
+
+function get_Flags2()
+{
+    return get_Property(20);
+}
+
+function put_Flags2(Flags2)
+{
+    put_Property(20, Flags2);
+}
+
+function get_Description()
+{
+    return get_Property(22);
+}
+
+function put_Description(Description)
+{
+    put_Property(22, Description);
+}
+
+function get_Hint()
+{
+    return get_Property(23);
+}
+
+function put_Hint(Hint)
+{
+    put_Property(23, Hint);
+}
+
+function get_Font()
+{
+    //ToDo!!!!
+}
+
+function put_Font(Font)
+{
+    //ToDo!!!!
+}
+
+function get_PictureId()
+{
+    return get_Property(41);
+}
+
+function put_PictureId(PictureId)
+{
+    put_Property(41, PictureId);
+}
+
+function get_Layer()
+{
+    return get_Property(42);
+}
+
+function put_Layer(Layer)
+{
+    put_Property(42, Layer);
+}
+
+function get_HotKey()
+{
+    return get_Property(43);
+}
+
+function put_HotKey(HotKey)
+{
+    put_Property(43, HotKey);
+}
+
+]]></script>
+</component>
+
+<component id="OpenConfDialogBrowser">
+<?component error="true" debug="true"?>
+
+    <comment><![CDATA[
+    ]]></comment>
+
+<public>
+
+    <property name="Browser">    
+        <put/>
+        <comment><![CDATA[
+Только для внутреннего использования!
+        ]]></comment>
+    </property>
+
+</public>
+<script language="JScript"><![CDATA[
+
+/*
+{"Controls",
+    { "1й Параметр контрола 1", "2й Параметр контрола 1", ... "43й Параметр контрола  1"},
+    { "1й Параметр контрола 2", "2й Параметр контрола 2", ... "43й Параметр контрола  2"},
+    ...
+    { "1й Параметр контрола 3", "2й Параметр контрола 3", ... "43й Параметр контрола  3"}
+}
+*/
+
+var Browser;
+
+function put_Browser(b)
+{
+    Browser = b;
+}
+
+]]></script>
+</component>
+
+</package>

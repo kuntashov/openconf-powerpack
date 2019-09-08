@@ -1,0 +1,657 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!--
+	Синтаксический анализ модулей
+	
+    Автор: Диркс Алексей
+	E-mail:		<adirks@ngs.ru>
+	ICQ UIN:	13472890
+
+-->
+<package>
+
+<component>
+<?component error="true" debug="true"?>
+<registration
+	description="OpenConf.1C++"
+	progid="OpenConf._1CPP"
+	version="1.00"
+	classid="{39FDBFD7-F28E-4242-8F1C-1CFEFAB0B5DD}"
+>
+</registration>
+
+<comment>Используем библиотеку типов OpenConf'a</comment> 
+<reference guid="{578f85c8-89eb-4cda-ac7e-8f3bb34e8b54}" /> 
+
+<public>
+	<property name="ClassCount" get="get_ClassCount"/>
+	<property name="ClassInfo" get="get_ClassInfo">
+	<comment><![CDATA[
+Возвращает объект типа TClassInfo из коллекции. Индекс м.б. числом - номером в коллекции, или строкой - именем класса.
+Переменные объекта:
+	Name - строка: имя класса
+	Location - строка: имя обработки или файла, где находятся определения методов
+	BaseClasses - коллекция: имена всех базовых классов
+	Methods - коллекция: имена всех публикуемых методов
+	Vars - коллекция: имена всех публикуемых переменных
+Методы:
+	OpenModule - открывает модуль класса в конфигураторе
+	FillMethodList - заполняет список всех публикуемых методов класса. Сюда попадают все методы из модуля, у которых указано "Экспорт"
+	]]></comment>
+	</property>
+	
+	<method name="SetConfig">
+		<PARAMETER name="Configurator"/>
+	</method>
+
+	<method name="UpdateClassesInfo">
+	<comment><![CDATA[
+Обновляет информацию о классах 1С++.
+	]]></comment>
+	</method>
+</public>
+
+<script language="JScript">
+<![CDATA[
+
+var Config;
+var fso = new ActiveXObject("Scripting.FileSystemObject");
+var OxyIniText = null;
+
+var Classes = new ActiveXObject("OpenConf.Collection");
+
+
+function get_ClassCount()
+{
+	return Classes.Size();
+}
+//index - имя класса или номер в коллекции
+function get_ClassInfo(index)
+{
+	if( typeof(index) == "number" )
+		return Classes.Item(index);
+	
+	var sz = Classes.Size();
+	index = index.toLowerCase();
+	for( i = 0; i < sz; i++ )
+	{
+		var Info = Classes.Item(i);
+		if( Info.Name.toLowerCase() == index )
+			return Info;
+	}
+	return null;
+}
+
+function SetConfig(Configurator)
+{
+	Config = Configurator
+}
+
+//Constructor for ClassInfo
+function TClassInfo(Name, Location, BaseClasses)
+{
+	this.Name = Name;
+	this.Location = Location;
+	this.BaseClasses = new ActiveXObject("OpenConf.Collection");
+	this.Methods = new ActiveXObject("OpenConf.Collection");
+	this.Vars = new ActiveXObject("OpenConf.Collection");
+	
+	this.OpenModule = function()
+	{
+		//Config.Message(this.Location);
+		name_len = this.Location.length;
+		if( this.Location.substr(name_len-3).toUpperCase() == "@MD" )
+		{
+			RealName = "Обработка."+this.Location.substr(0, name_len-3);
+			//Config.Message(RealName);
+			Doc = Config.Documents(RealName);
+			Doc.Open();
+		}
+		else if( this.Location.substr(name_len-4).toLowerCase() == ".ert" )
+		{
+			//Config.Message("ert "+this.Location);
+			Wnd = FindWindow(this.Location);
+			if( Wnd != null )
+				Doc = Wnd.Document;
+			else
+				Doc = Config.Documents.Open(this.Location);
+		}
+		else //текстовый файл
+		{
+			//Config.Message("file "+this.Location);
+			Wnd = FindWindow(this.Location);
+			if( Wnd != null )
+				Doc = Wnd.Document;
+			else
+				Doc = Config.Documents.Open(this.Location);
+			return Doc;
+		}
+		
+		Doc.ActivePage = "Модуль";
+		return Doc.Page("Модуль");
+	}
+	
+	this.FillMethodList = FillMethodList;
+	
+	var re_class = new RegExp('[\\wА-яёЁ\\d_.]+', "g");
+	var Matches;
+	while( (Matches = re_class.exec(BaseClasses)) != null )
+		this.BaseClasses.Add(Matches[0]);
+}
+
+function TClassModule()
+{
+	this.Type = 0; //1 - файл, 2 - обработка, 3 - внешняя обработка
+	this.Path = "";
+	this.Doc = null;
+	this.File = null;
+	this.nLine = -1;
+	this.WhereOpened = false;
+	
+	this.Open = function(ModuleName)
+	{
+		this.Close();
+		
+		this.Path = ModuleName;
+		this.nLine = -1;
+		
+		name_len = ModuleName.length;
+		if( ModuleName.substr(name_len-3).toUpperCase() == "@MD" )
+		{
+			this.Type = 2;
+			RealName = "Обработка."+ModuleName.substr(0, name_len-3);
+			this.Doc = Config.Documents(RealName).Page("Модуль");
+		}
+		else if( ModuleName.substr(name_len-4).toLowerCase() == ".ert" )
+		{                        
+			if( ! fso.FileExists(ModuleName) ) return false;
+
+			this.Type = 3;
+			Wnd = FindWindow(ModuleName);
+			this.WhereOpened = Wnd != null;
+			if( Wnd != null )
+				this.Doc = Wnd.Document.Page("Модуль");
+			else
+			{
+				this.Doc = Config.Documents.Open(ModuleName);
+				if (!this.Doc) // если по какой-то причине не смогли открыть модуль
+				{
+					lWnd = FindWindow(ModuleName); // если окно все-таки открылось, нужно его закрыть
+					if( lWnd != null )
+						lWnd.Close();
+					return false;
+				}
+				this.Doc = this.Doc.Page("Модуль");
+			}
+		}
+		else
+		{
+			if( ! fso.FileExists(ModuleName) ) return false;
+			this.Type = 1;
+			this.File = fso.OpenTextFile(ModuleName, 1, false);
+		}
+		
+		this.nLine = 0;
+		return true;
+	}
+	
+	this.GetText = function()
+	{
+		if( this.Type == 1 )
+			return this.File.ReadAll();
+		else
+			return this.Doc.Text;
+	}
+	
+	this.GetLine = function()
+	{
+		var str;
+		if( this.Type == 1 )
+		{
+			if( this.File.AtEndOfStream ) return null;
+			str = this.File.ReadLine();
+		}
+		else
+		{
+			if( this.nLine >= this.Doc.LineCount ) return null;
+			str = this.Doc.Range(this.nLine);
+		}
+		this.nLine++;
+		return str;
+	}
+
+	this.Close = function()
+	{
+		if( this.Type == 1 )
+		{
+			if( this.File != null ) this.File.Close();
+		}
+		else if( this.Type == 2 )
+		{
+		}
+		else if( this.Type == 3 )
+		{
+			if( ! this.WhereOpened )
+			{
+				Wnd = FindWindow(this.Doc.path);
+				if( Wnd != null ) Wnd.Close();
+			}
+		}
+		this.Type = -1;
+		this.File = null;
+		this.Doc = null;
+	}
+}
+
+function FindWindow(DocPath)
+{
+	Wnd = Config.Windows.FirstWnd;
+	while( Wnd != null )
+	{   
+		// чтобы не зависеть от написания пути типа .\Общие\..\ 
+		// использую абсолютный путь
+		var fileDocPath = DocPath;
+		try{
+			fileDocPath = fso.GetFile(DocPath).Path;
+		}
+		catch(e){}
+
+		var wndDocPath = Wnd.Document.path;
+		try{
+			wndDocPath = fso.GetFile(wndDocPath).Path;
+		}
+		catch(e){}
+		
+		if( wndDocPath.toLowerCase() == fileDocPath.toLowerCase() )
+			return Wnd;
+		Wnd = Config.Windows.NextWnd(Wnd);
+	}
+	return null;
+}
+
+function UpdateClassesInfo()
+{
+	Classes.RemoveAll(Classes);
+	OxyIniText = null;
+	
+	FileName = Config.IBDir + "defcls.prm";
+	if( ! fso.FileExists(FileName) )
+	{
+		try
+		{
+			var Doc = Config.Documents("Обработка.DefCls");
+		}
+		catch(err)
+		{
+			return;
+		}
+		FileName = "DefCls@MD";
+	}
+	
+	ScanClassHeader(FileName, Config.IBDir);
+}
+
+function ScanClassHeader(FileName, BaseDir)
+{
+	while( BaseDir.substr(BaseDir.length-1) == "\\" )
+		BaseDir = BaseDir.substr(0, BaseDir.length-1);
+	
+	var Header = new TClassModule;
+	if( ! Header.Open(FileName) )
+	{
+		Config.Message("Ошибка открытия модуля " + FileName, Config.mError);
+		return false;
+	}
+	
+	var re_include = new RegExp('^\\s*//#include\\s+((?:".*")|(?:(?:\\s*\\S+)*)|(?:[^"]*))\\s*$', "i");
+	var str, Matches;
+	while( (str = Header.GetLine()) != null )
+	{
+		if( (Matches = re_include.exec(str)) == null ) continue;
+		
+		var IncFile = Matches[1];
+		if( IncFile.substr(0, 1) == '"' ) IncFile= IncFile.substr(1, IncFile.length - 2);
+		IncFile = Translate1CPPath(IncFile, BaseDir);
+		ScanClassHeader(IncFile, fso.GetParentFolderName(IncFile));
+	}
+
+	Header.Open(FileName);
+	var Text = Header.GetText();
+	Text = RemoveComments(Text);
+
+	var lFilePathPattern = "\\w:\\\\(?:[^:]+\\\\)*[^:]+\\.[^:\\s]+" ;
+	var re_class = new RegExp('(?:класс|class)\\s+(\\S+)\\s*=\\s*((?:'+lFilePathPattern+')|[^:\\s]+)\\s*(?::\\s*([^{]*))?\\s*{', "mig");
+
+	while( (Matches = re_class.exec(Text)) != null )
+	{
+		var Name = Matches[1];
+		var Location = Matches[2];
+		var Base = Matches[3].replace(/\/\/.*$/mg, "");
+		Base = Base.replace(/[\r\n]/, "");
+
+		//Config.Message(Name+": "+Location+": "+Base);
+		Location = Translate1CPPath(Location, BaseDir);
+
+		var Info = new TClassInfo(Name, Location, Base);
+		Classes.Add(Info);
+	}
+
+	Header.Close();
+}
+
+function Translate1CPPath(Path, BaseDir)
+{
+	if( Path.substr(Path.length-3).toUpperCase() == "@MD" )
+		return Path;
+	if( Path.substr(0, 1) == "#" )
+	{
+		PathParts = Path.split("\\");
+		PathParts[0] = OxyAlias(PathParts[0]);
+		return PathParts.join("\\");
+	}
+	if( Path.substr(1, 1) != ":" && Path.substr(2, 1) != "\\" )
+		return BaseDir + "\\" + Path;
+		
+	return Path;
+}
+
+function OxyAlias(alias)
+{
+	if( OxyIniText == null )
+	{
+		var IniName = Config.BinDir + "oxy.ini";
+		if( ! fso.FileExists(IniName) )
+			return "";
+		var OxyINI = fso.OpenTextFile(IniName, 1, false);
+		OxyIniText = OxyINI.ReadAll();
+	}
+	
+	var re_alias = new RegExp('^' + alias.substr(1) + '\\s*=\\s*([^\\r\\n]*)\\s*[\\r\\n]*$', "mig");
+	var Matches;
+	var found = "";
+	while( (Matches = re_alias.exec(OxyIniText)) != null )
+		found = Matches[1];
+	
+	if( found != "" && found.substr(found.length-1) == "\\" )
+		found = found.substr(0, found.length-1);
+
+	return found;
+}
+
+function FillMethodList()
+{
+	//var re_comment = new RegExp('^\\s*((?:(?:(?:"[^"]")*)|(?:[^/]*)|(?:[^/]+/))*)(//.*)?\\s*$', "");
+	var re_exopr_var = new RegExp('\\s*(?:(?:Var)|(?:Перем))\\s*([\\wА-яёЁ\\d]*)(?:\\[[\\d\\s]*\\])?\\s+экспорт\\s*;$', "igm");
+	//var re_var = new RegExp('([\\wА-яёЁ\\d]+)\\s*(\\[[\\d\\s,]*\\])?', "ig");
+	//var re_space = new RegExp('\\s+', "g");
+	var re_proc = new RegExp('\\s*((?:procedure)|(?:function)|(?:процедура)|(?:функция))\\s+([\\wА-яёЁ\\d]+)\\s*\\(([\\wА-яёЁ\\d\\s,.="\']*)\\)\\s*(?:export|экспорт)\\s*((?:forward)|(?:далее))?', "igm");
+	
+	this.Methods.RemoveAll(this.Methods);
+	this.Vars.RemoveAll(this.Methods);
+
+	var Module = new TClassModule;
+	if( ! Module.Open(this.Location) )
+	{
+		Config.Message("Невозможно открыть модуль "+this.Location);
+		return;
+	}
+	
+	var Text = Module.GetText();
+	Module.Close();
+	
+	var Matches;
+	while( (Matches = re_proc.exec(Text)) != null )
+	{
+		if( Matches[4] != "" ) continue;
+		
+		method_type = Matches[1].toLowerCase();
+		if( method_type == "procedure" || method_type == "процедура" )
+			method_type = "p:";
+		else
+			method_type = "f:";
+		this.Methods.Add(method_type + Matches[2]);
+	}
+
+	while( (Matches = re_exopr_var.exec(Text)) != null )
+	{
+		this.Vars.Add(Matches[1]);
+	}
+}
+
+function RemoveComments(str)
+{
+	var re_CrLf = new RegExp('\r\n', "");
+	var Lines = str.split(re_CrLf);
+	var n = Lines.length;
+	for(i = 0; i < n; i++)
+	{
+		var pos = Lines[i].indexOf("//");
+		if( pos >= 0 )
+		{
+			Lines[i] = Lines[i].substr(0, pos);
+		}
+	}
+	
+	return Lines.join("\r\n");
+}
+
+]]>
+</script>
+</component> <!-- OpenConf._1CPP -->
+
+
+<!-- >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> -->
+<component>
+<?component error="true" debug="true"?>
+<registration
+	description="OpenConf.SyntaxAnalysis"
+	progid="OpenConf.SyntaxAnalysis"
+	version="1.00"
+	classid="{C82CA5DE-9211-4881-9389-90813F45D6F2}"
+>
+</registration>
+
+<comment>Используем библиотеку типов OpenConf'a</comment> 
+<reference guid="{578f85c8-89eb-4cda-ac7e-8f3bb34e8b54}" /> 
+
+<public>
+	<property name="Methods" get="get_Methods"/>
+	<property name="Method" get="get_Method"/>
+	<property name="MethodCount" get="get_MethodCount"/>
+	
+	<method name="AnalyseModule">
+	<comment><![CDATA[
+	Анализ указанного модуля
+	]]></comment>
+		<PARAMETER name="TextDoc"/>
+	</method>
+	<method name="SetConfig">
+		<PARAMETER name="Configurator"/>
+	</method>
+</public>
+
+<script language="JScript">
+<![CDATA[
+
+var Config;
+var Methods = new ActiveXObject("OpenConf.Collection");
+var ModuleVars = new ActiveXObject("OpenConf.Collection");
+
+function get_Methods()
+{
+	return Methods;
+}
+function get_MethodCount()
+{
+	return Methods.Size();
+}
+function get_Method(i)
+{
+	return Methods.Item(i);
+}
+
+function SetConfig(Configurator)
+{
+	Config = Configurator
+}
+
+//Constructor
+function Method()
+{
+	this.Name = "";
+	this.Params = new ActiveXObject("OpenConf.Collection");
+	this.Vars = new ActiveXObject("OpenConf.Collection");
+	this.DeclaredVars = new ActiveXObject("OpenConf.Collection");
+	this.AutomaticVars = new ActiveXObject("OpenConf.Collection");
+	this.Calls = new ActiveXObject("OpenConf.Collection");
+	this.StartLine = 0;
+	this.EndLine = 0;
+}
+
+
+var re_comment = new RegExp('^\\s*((?:(?:(?:"[^"]")*)|(?:[^/]*)|(?:[^/]+/))*)(//.*)?\\s*$', "");
+var re_proc = new RegExp('^\\s*((?:procedure)|(?:function)|(?:процедура)|(?:функция))\\s+([\\wА-яёЁ\\d]+)\\s*\\(([\\wА-яёЁ\\d\\s,.="\']*)\\)\\s*((?:forward)|(?:далее))?(.*)$', "i");
+var re_param = new RegExp('(?:(?:Val)|(?:Знач)\\s+)?([\\wА-яёЁ\\d]+)(\\s*=\\s*(?:(?:"[^"]")|(?:[^,)]*))*)?', "ig");
+var re_proc_end = new RegExp('((?:EndProcedure)|(?:EndFunction)|(?:КонецПроцедуры)|(?:КонецФункции))', "i");
+var re_vars_def = new RegExp('^\\s*(?:(?:Var)|(?:Перем))\\s*([\\wА-яёЁ\\d,=\\[\\]\\s]*)(\\s+экспорт\\s*)?([\\s;]*)$', "i");
+var re_var = new RegExp('([\\wА-яёЁ\\d]+)\\s*(\\[[\\d\\s,]*\\])?', "ig");
+var re_var_assign = new RegExp('([\\wА-яёЁ\\d.]+)\\s*=\\s*(([^;]*);)?', "g");
+var re_call = new RegExp('([\\wА-яёЁ\\d.]+)\\s*\\(', "g");
+var re_space = new RegExp('\\s+', "g");
+var re_CrLf = new RegExp('[\\n]+', "");
+	
+function AnalyseModule(TextDoc)
+{
+	var Meth;
+	var stStart = 0, stInProc = 1, stInModule = 2, stInVarsDef;
+	var state = stStart, PrevState;
+	
+	Methods.RemoveAll(Methods);
+	ModuleVars = new ActiveXObject("OpenConf.Collection");
+	var proc_count = 0;
+	
+	var Lines = TextDoc.Text.split(re_CrLf);
+	var n = Lines.length;
+	for(i = 0; i < n; i++)
+	{
+		var str = Lines[i]; //TextDoc.Range(i);
+		var Matches = re_comment.exec(str);
+		if( Matches != null )
+		{
+			str = Matches[1];
+		}
+		
+		switch( state )
+		{
+		case stStart:
+		case stInModule:
+			Matches = re_proc.exec(str);
+			if( Matches != null )
+			{
+				forward = Matches[4];
+				endproc = Matches[5];
+				if( forward == "" )
+				{
+					Meth = new Method();
+					Meth.Name = Matches[2];
+					Meth.StartLine = i;
+					str = Matches[3];
+					while( (Matches = re_param.exec(str)) != null )
+					{
+						Meth.Params.Add(Matches[1]);
+					}
+					Methods.Add(Meth);
+					proc_count++;
+					state = stInProc;
+					if( re_proc_end.exec(endproc) != null )
+						state = stInModule;
+						
+					Config.Status(""+i+"/"+n+": "+Meth.Name);
+				}
+			}
+			break;
+			
+		case stInProc:
+			Matches = re_proc_end.exec(str);
+			if( Matches != null )
+			{
+				if( state == stInProc ) Meth.EndLine = i;
+				state = stInModule;
+			}
+			else if( (Matches = re_vars_def.exec(str)) != null )
+			{
+				exported = Matches[2];
+				semicolon = Matches[3].replace(re_space, "");
+				str = Matches[1];
+				while( (Matches = re_var.exec(str)) != null )
+				{
+					if( state == stInProc )
+						Meth.DeclaredVars.Add(Matches[1]);
+					else
+						ModuleVars.Add(Matches[1]);
+				}
+				if( semicolon != ";" )
+				{
+					PrevState = state;
+					state = stInVarsDef;
+				}
+			}
+			else
+			{
+				if( state == stInProc )
+				{
+					AutomaticVars = Meth.AutomaticVars;
+					DeclaredVars = Meth.DeclaredVars;
+					Params = Meth.Params;
+				}
+				else
+				{
+					AutomaticVars = ModuleVars;
+					DeclaredVars = ModuleVars;
+					Params = ModuleVars;
+				}
+				while( (Matches = re_var_assign.exec(str)) != null )
+				{
+					if( Matches[1].indexOf(".", 0) >= 0 ) continue;
+					if( Params.IndexOf(Matches[1]) >= 0 ) continue;
+					if( DeclaredVars.IndexOf(Matches[1]) >= 0 ) continue;
+					if( AutomaticVars.IndexOf(Matches[1]) >= 0 ) continue;
+					
+					AutomaticVars.Add(Matches[1]+': '+Matches[3]);
+				}
+				
+				if( state == stInProc )
+				{
+					while( (Matches = re_call.exec(str)) != null )
+					{
+						if( Matches[1].indexOf('.') >= 0 ) continue;
+						if( Meth.Calls.IndexOf(Matches[1]) >= 0 ) continue;
+						Meth.Calls.Add(Matches[1]);
+					}
+				}
+			}
+			break;
+			
+		case stInVarsDef:
+			while( (Matches = re_var.exec(str)) != null )
+			{
+				if( PrevState == stInProc )
+					Meth.DeclaredVars.Add(Matches[4]);
+				else
+					ModuleVars.Add(Matches[4]);
+			}
+			str = str.replace(re_space, "");
+			if( str.substr(str.length-1) == ";" )
+				state = PrevState;
+			break;
+		}
+	}
+	Config.Status("");
+
+	return Methods;
+}
+
+]]>
+</script>
+</component>
+
+</package>

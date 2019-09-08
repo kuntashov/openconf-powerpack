@@ -1,0 +1,4 @@
+addin.addinmail
+binarydata
+adodb.recordset
+adodb.connection

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wc-entries
+   xmlns="svn:">
+<entry
+   committed-rev="5"
+   name=""
+   committed-date="2005-07-07T08:49:23.390625Z"
+   url="file:///f:/repos/svn/OpenConf/system/ScriptManager/t/RegKeyMap"
+   last-author="1"
+   kind="dir"
+   revision="5"/>
+<entry
+   committed-rev="5"
+   name="01 Метод Add и свойство HotKeyInfo.js"
+   text-time="2005-07-06T16:43:02.421875Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="0defe7dc0bd3c9e62b709b0a54a5ee63"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="5"
+   name="04 Метод Load.js"
+   text-time="2005-07-06T18:26:52.609375Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="181b0fe77cd417370752284324bf95c4"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="5"
+   name="05 Метод Save.js"
+   text-time="2005-07-07T08:32:23.578125Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="28b181d18f9edcf4692fce6049d28660"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="5"
+   name="02 Метод Load компонента HotKeyInfo.js"
+   text-time="2005-07-06T18:13:36.375000Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="7c9017a8e3bcef345ab14d1a75205897"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="5"
+   name="03 Метод Save компонента HotKeyInfo.js"
+   text-time="2005-07-06T17:54:16.953125Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="c019514c5b2981246563c10257e606c1"
+   last-author="1"
+   kind="file"/>
+<entry
+   committed-rev="5"
+   name="00 Создание объекта.js"
+   text-time="2005-07-06T16:13:14.312500Z"
+   committed-date="2005-07-07T08:49:23.390625Z"
+   checksum="42b1781a21ff4b44d9df0361e0df32a8"
+   last-author="1"
+   kind="file"/>
+</wc-entries>

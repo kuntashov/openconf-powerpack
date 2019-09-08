@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="windows-1251" ?>
+<!--
+	Copyr:ight (c) 2005 OpenConf Community <http://openconf.itland.ru>
+
+	$Id: $
+
+	Авторы:  
+		Александр Кунташов aka a13x <kuntashov@yandex.ru> icq#338758861  
+-->
+<package>
+<component id="Registry">
+<?component error="true" debug="true"?>
+
+<registration
+	description="Registry component"
+	progid="kuntashov.Registry"
+	version="1.00"
+	classid="{002E54CA-1C8E-4599-B06C-46B01388A4DC}">
+</registration>
+
+<object id="RARUSLib" progid="Rarus.ApiExtender" />
+<object id="WSH" progid="WScript.Shell" />
+
+<public>
+
+	<property name="RootKey">
+		<get />
+		<put />
+	</property>
+	<property name="CurrentKey">
+		<get />
+		<put />
+	</property>
+	<property name="KeyName">
+		<get />		
+	</property>
+	<method name="OpenKey">
+		<parameter name="strName" />
+	</method>
+	<method name="Close" />
+	<method name="KeyExists">
+		<parameter name="strName" />
+	</method>
+	<method name="BuildPath">
+		<parameter name="strBase" />
+		<parameter name="strName" />
+	</method>
+
+	<method name="SubKeysCount" />
+	<method name="CreateSubKey">
+		<parameter name="strName" />
+	</method>
+	<method name="DeleteSubKey">
+		<parameter name="strName" />
+	</method>
+	<method name="SubKeyName">
+		<parameter name="index" />
+	</method>
+	<property name="SubKeys">
+		<get />
+	</property>
+
+	<property name="Values">
+		<get />
+	</property>
+	<method name="ValueExists">
+		<parameter name="strName" />
+	</method>
+	<method name="ValuesCount" />
+	<method name="ValueName">
+		<parameter name="index" />
+	</method>
+	<method name="ReadValue">
+		<parameter name="strName" />
+	</method>
+	<method name="WriteValue">
+		<parameter name="Name" />
+		<parameter name="Value" />		
+	</method>
+	<method name="DeleteValue">
+		<parameter name="strName" />
+	</method>
+
+</public>
+
+<script language="JavaScript">
+<![CDATA[
+
+var _RK = {
+	'HKEY_CLASSES_ROOT'		: 0,
+	'HKEY_CURRENT_USER'		: 1,
+	'HKEY_LOCAL_MACHINE'	: 2
+}
+
+var _RKStr = {
+	'HKCR' : 'HKEY_CLASSES_ROOT',
+	'HKCU' : 'HKEY_CURRENT_USER',
+	'HKLM' : 'HKEY_LOCAL_MACHINE'
+}
+
+var _T = {
+	'REG_SZ'		: 'REG_SZ',
+	'REG_EXPAND_SZ'	: 'REG_EXPAND_SZ',
+	'REG_DWORD'		: 'REG_DWORD',
+	'REG_BINARY'	: 'REG_BINARY'
+}
+
+var RootKey = 'HKEY_CURRENT_USER';
+var CurrentKey = "";
+
+RARUSLib.regOpen();
+RARUSLib.regRootKey = _RK[RootKey];
+
+var SubKeys = null;
+var Values = null;
+
+var description = new Registry;
+
+function Registry()
+{
+	this.get_RootKey = get_RootKey;
+	this.put_RootKey = put_RootKey;
+	this.get_CurrentKey = get_CurrentKey;
+	this.put_CurrentKey = put_CurrentKey;
+	this.get_KeyName = get_KeyName;
+	this.OpenKey = OpenKey;
+	this.KeyExists = KeyExists;
+	this.BuildPath = BuildPath;
+	
+	this.get_SubKeys = get_SubKeys;
+	this.SubKeysCount = SubKeysCount;
+	this.SubKeyName = SubKeyName;
+	this.CreateSubKey = CreateSubKey;
+	this.DeleteSubKey = DeleteSubKey;
+
+	this.get_Values = get_Values;
+	this.ValueExists = ValueExists;
+	this.ValuesCount = ValuesCount;
+	this.ValueName = ValueName;
+	this.ReadValue = ReadValue;
+	this.WriteValue = WriteValue;
+	this.DeleteValue = DeleteValue;
+}
+
+function Reset()
+{
+	RootKey = 'HKEY_CURRENT_USER';
+	CurrentKey = "";
+	RARUSLib.regClose();
+	RARUSLib.regOpen();
+	//RARUSLib.regRootKey = _RK[rk];
+}
+
+function BuildPath(strBase, strName)
+{
+	var glue = "";
+	if (strBase.charAt(strBase.length-1)!="\\") {
+		glue = "\\";
+	}
+	if (strName.charAt(0)=="\\") {
+		strName = strName.substr(1);
+	}
+	return strBase + glue + strName;
+}
+
+function get_RootKey()
+{
+	return RootKey;
+}
+
+function put_RootKey(newValue)
+{
+	var rk = (newValue.length>4) 
+				? newValue.toUpperCase() 
+				: _RKStr[newValue.toUpperCase()];
+	
+	if (_RK[rk]===undefined) { // HKCR === 0, поэтому проверка вида (!_RK[rk]) не катит
+		throw(new Error(0, "Неизвестное имя раздела: " + newValue));
+	}
+	
+	Reset();
+	RootKey = rk;
+	RARUSLib.regRootKey = _RK[rk];
+}
+
+function get_CurrentKey()
+{
+	return CurrentKey;
+}
+
+function put_CurrentKey(strName)
+{
+	if (!getRootKeyName(strName)) {
+		strName = BuildPath(get_RootKey(), strName);
+	}
+	OpenKey(strName);
+}
+
+function get_KeyName()
+{
+	var m = RARUSLib.regCurrentKey.match(/([^\\]+)$/);
+	if (m.length>1) {
+		return m[1];
+	}
+	return "";
+}
+
+function getRootKeyName(strName)
+{
+	var rk = null;
+	var m = strName.match(/^(\w+)\\/);
+	if (m) {
+		rk = (m[1].length>4)?m[1].toUpperCase():_RKStr[m[1].toUpperCase()];
+		if (_RK[rk]===undefined) {// HKCR === 0, поэтому проверка вида (!_RK[rk]) не катит
+			rk = null;
+		}
+	}
+	return rk;
+}
+
+function OpenIfExistsOrDie(strName)
+{
+	if (!KeyExists(strName)) {
+		var keyFullName = CurrentKey;
+		CurrentKey = "";
+		throw(new Error(0, "Ключ не существует: " + keyFullName))
+	}
+	RARUSLib.regOpenKey(strName);
+}
+
+/*
+ *	Различаются следующие варианты задания пути:
+ *	1. полный (абсолютный) путь
+ *			HKEY_CURRENT_USER\TestKey
+ *			HKCU\TestKey
+ *	2. путь относително текущего ключа (CurrentKey)
+ *			TestKey
+ *	3. путь относительно текущего раздела
+ *			\TestKey
+ */
+function OpenKey(strName)
+{
+	// 3. путь относительно текущего раздела
+	if (strName.substr(0,1) == "\\") {
+		CurrentKey = RootKey + strName;		
+		OpenIfExistsOrDie(strName)
+		return;
+	}	
+	// проверяем, не начинается ли путь с имени раздела
+	var rk = getRootKeyName(strName);
+	if (rk) {
+		// 1. путь начинается с имени раздела, это абсолютный путь
+		put_RootKey(rk);
+		CurrentKey = strName;
+		OpenIfExistsOrDie(strName.substr(strName.search(/\\/)+1));
+		return;
+	}
+	// 2. путь, заданный относительно текущего ключа
+	CurrentKey = BuildPath(CurrentKey, strName);
+	OpenIfExistsOrDie(strName); 
+}
+
+function KeyExists(strName)
+{
+/* XXX 
+	var rk = getRootKeyName(strName);
+	if (rk) {
+		var ret = false;
+		var old = RARUSLib.regRootKey;
+		RARUSLib.regRootKey = _RK[rk];
+		ret = (RARUSLib.regKeyExists(strName.substr(strName.search(/\\/)+1))==2);
+		RARUSLib.regRootKey = old;
+		return ret;
+	}
+*/
+	return (RARUSLib.regKeyExists(strName)==2);
+}
+
+function CreateSubKey(strName)
+{
+	try {
+		RARUSLib.regCreateKey(strName, 0);	
+		return true;
+	}
+	catch (e) {
+		return false;
+	}
+}
+
+function DeleteSubKey(strName)
+{
+	try {
+		RARUSLib.regDeleteKey(strName);	
+		return true;
+	}
+	catch (e) {
+		return false;
+	}
+}
+
+function Close()
+{
+	if (SubKeys) {
+		SubKeys.Parent = null;
+	}
+	SubKeys = null;
+	if (Values) {
+		Values.Parent = null;
+	}
+	Values = null;
+	RARUSLib.regClose();
+}
+
+function SubKeysCount()
+{
+	return RARUSLib.regKeysCount();
+}
+
+function get_SubKeys()
+{
+	if (!SubKeys) {
+		SubKeys = createComponent("RegistrySubKeys");
+		SubKeys.Parent = description;
+	}
+	if (!arguments.length) {		
+		return SubKeys;
+	}
+	return SubKeys.Item(arguments[0])
+}
+
+function SubKeyName(index)
+{
+	if ((-1<index)&&(index<SubKeysCount())) {
+		return RARUSLib.regKeyName(index);
+	}
+	return "";
+}
+
+function ValueExists(strName)
+{
+	return (RARUSLib.regValueExists(strName)==2);
+}
+
+function get_Values()
+{
+	if (!SubKeys) {
+		Values = createComponent("RegistryValues");
+		Values.Parent = description;
+	}
+	if (!arguments.length) {		
+		return Values;
+	}
+	return Values.Item(arguments[0])
+}
+
+function ValuesCount()
+{
+	return RARUSLib.regValuesCount();
+}
+
+function ValueName(index)
+{
+	if ((-1<index)&&(index<ValuesCount())) {
+		return RARUSLib.regValueName(index);
+	}
+	return null;
+}
+
+function getValueNameOrDie(index)
+{
+	var name = index;
+	if (typeof(name)=="number") {
+		name = ValueName(name);
+	}
+	if (!name) {
+		throw(new Error(0, "Индекс за пределами значения: " + index));
+	}
+	return name;
+}
+
+/*
+ *	Поддерживаются обращения как по индексу (от 0 до Count()),
+ *	так и по имени значения.
+ */
+function ReadValue(strName)
+{
+	strName = getValueNameOrDie(strName);
+	return RARUSLib.regReadValue(strName, "");
+}
+
+function WriteValue(Name, Value, Type)
+{
+	Name = getValueNameOrDie(Name);
+	if (Type) {
+		if (!_T[Type]) {
+			throw(new Error(0, "Неизвестный тип значения: " + Type));
+		}	
+		// отвратительный способ, но другого пока нет
+		WSH.RegWrite(BuildPath(CurrentKey, Name), Value, Type);		
+		return;
+	}
+	RARUSLib.regWriteValue(Name, Value);
+}
+
+function DeleteValue(strName)
+{
+	if (ValueExists(strName)) {
+		RARUSLib.regDeleteValue(strName);
+	}
+}
+
+]]>
+</script>
+</component>
+
+<component id="RegistrySubKeys">
+<?component error="true" debug="true"?>
+<public>
+
+	<property name="Parent">
+		<get />
+		<put />
+	</property>
+	<method name="Count" />
+	<property name="Item">
+		<get />
+	</property>
+	<method name="Add">
+		<parameter name="strName" />
+	</method>
+	<method name="Del">
+		<parameter name="strName" />
+	</method>
+
+</public>
+<script language="JScript">
+<![CDATA[
+
+var Parent = null;
+
+function get_Parent()
+{
+	return Parent;
+}	
+
+function put_Parent(newValue)
+{
+	Parent = newValue;
+}
+
+function Count()
+{
+	return Parent.SubKeysCount();
+}
+
+function get_Item(index)
+{
+	if ((-1<index)&&(index<Count())) {
+		var Item = createComponent("Registry");
+		Item.CurrentKey = Parent.BuildPath(Parent.get_CurrentKey(), Parent.SubKeyName(index));
+		return Item;
+	}
+	return null;
+}
+
+function Add(strName)
+{
+	return Parent.CreateSubKey(strName);
+}
+
+function Del(strName)
+{
+	return Parent.DeleteSubKey(strName);
+}
+
+]]>
+</script>
+</component>
+
+<component id="RegistryValues">
+<?component error="true" debug="true"?>
+<public>
+
+	<property name="Parent">
+		<get />
+		<put />
+	</property>
+	<method name="Count" />
+	<method name="Name">
+		<parameter name="index" />		
+	</method>
+	<property name="Item">
+		<get />
+		<put />
+	</property>
+
+</public>
+<script language="JScript">
+<![CDATA[
+
+var Parent = null;
+
+function get_Parent()
+{
+	return Parent;
+}	
+
+function put_Parent(newValue)
+{
+	Parent = newValue;
+}
+
+function Count()
+{
+	return Parent.ValuesCount();
+}
+
+// Имя значения по индексу
+function Name(index)
+{
+	return Parent.ValueName(index);
+}
+
+function get_Item(name)
+{
+	return Parent.ReadValue(name);	
+}
+
+// ТОЛЬКО ДЛЯ СТРОКОВЫХ ЗНАЧЕНИЙ!!!! Если значение до сего момента
+// имело тип, отличный от строкового, отныне оно станет строковым!
+// Используйте метод WriteValue() для записи значений с типом, отличным
+// от строкового!
+function put_Item(name, strValue)
+{
+	if (Parent.ValueExists(name)) {
+		Parent.WriteValue(name, strValue);
+	}
+} 
+
+]]>
+</script>
+</component>
+
+</package>

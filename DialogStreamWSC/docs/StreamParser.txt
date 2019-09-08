@@ -1,0 +1,29 @@
+Компонент (Класс) OpenConf.StreamParser
+
+    Свойство Stream as OpenConf.StreamItem, ReadOnly
+        После успешного вызова метода Parse()
+        содержит ссылку на объект OpenConf.StreamItem, являющийся
+        "корнем" потока.
+
+    Свойство LastError as String, ReadOnly
+        В случае ошибки (метод Parse() вернул false)
+        будет (должно :-) содержать текстовое описание ошибки.
+
+    Свойство Source as String, Read/Write
+        Исходный код Stream'a ('{"Blah-Blah",...}')
+
+    Метод Parse() as Boolean
+        Выполняет парсинг stream'a. Stream передается либо в качестве
+        необязательного параметра метода Parse(), либо предварительно
+        нужно присвоить строку-stream свойству Source парсера.
+
+Компонент (Класс) OpenConf.StreamItem
+    Явно не создается, только в результате использования
+    метода Parse объекта OpenConf.StreamParser
+
+    Свойство Data as Variant, Read/Write
+        Данные соответсвующего элемента Stream'а.
+        Либо строка, либо объект типа OpenConf.Collection
+
+    Метод Stringify() as String
+        Генерирует и возвращает исходный код элемента Stream'а
